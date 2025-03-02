@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "1036408704740",
+    "firebase_url": "https://proyecto-jardinerito-default-rtdb.firebaseio.com",
+    "project_id": "proyecto-jardinerito",
+    "storage_bucket": "proyecto-jardinerito.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1036408704740:android:d74a7c6e08482dc2e6e6f1",
+        "android_client_info": {
+          "package_name": "com.example.appjardinerito"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBKSfauPZwxrQoH_KP9gQBgThP5LlrAxvs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
