@@ -29,6 +29,7 @@ class SimplePlantSelectionScreen extends StatelessWidget {
               "Planta agregada a Mi Jardín: $plantName",
               style: GoogleFonts.poppins(),
             ),
+            duration: Duration(seconds: 2),
           ),
         );
 
