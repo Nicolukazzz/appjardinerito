@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:provider/provider.dart';
+import 'package:google_fonts/google_fonts.dart'; // Importa Google Fonts
 import 'package:appjardinerito/main.dart'; // Importa ThemeProvider
 import 'data_screen.dart';
 import 'blue_screen.dart';
@@ -15,17 +16,21 @@ class PlantSelectionScreen extends StatelessWidget {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text("Crear nueva planta"),
+          title: Text("Crear nueva planta", style: GoogleFonts.poppins()),
           content: TextField(
             controller: _nameController,
-            decoration: InputDecoration(hintText: "Nombre de la planta"),
+            decoration: InputDecoration(
+              hintText: "Nombre de la planta",
+              hintStyle: GoogleFonts.poppins(),
+            ),
+            style: GoogleFonts.poppins(),
           ),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: Text("Cancelar"),
+              child: Text("Cancelar", style: GoogleFonts.poppins()),
             ),
             TextButton(
               onPressed: () {
@@ -35,7 +40,7 @@ class PlantSelectionScreen extends StatelessWidget {
                   Navigator.pop(context);
                 }
               },
-              child: Text("Crear"),
+              child: Text("Crear", style: GoogleFonts.poppins()),
             ),
           ],
         );
@@ -60,21 +65,30 @@ class PlantSelectionScreen extends StatelessWidget {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text("Eliminar planta"),
-          content: Text("¿Estás seguro de que deseas eliminar esta planta?"),
+          title: Text("Eliminar planta", style: GoogleFonts.poppins()),
+          content: Text(
+            "¿Estás seguro de que deseas eliminar esta planta?",
+            style: GoogleFonts.poppins(),
+          ),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: Text("Cancelar", style: TextStyle(color: Colors.grey)),
+              child: Text(
+                "Cancelar",
+                style: GoogleFonts.poppins(color: Colors.grey),
+              ),
             ),
             TextButton(
               onPressed: () {
                 _deletePlant(plantName);
                 Navigator.pop(context);
               },
-              child: Text("Eliminar", style: TextStyle(color: Colors.red)),
+              child: Text(
+                "Eliminar",
+                style: GoogleFonts.poppins(color: Colors.red),
+              ),
             ),
           ],
         );
@@ -101,15 +115,19 @@ class PlantSelectionScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Jardinerito"),
+        title: Text(
+          "Jardinerito",
+          style: GoogleFonts.poppins(
+            fontWeight: FontWeight.bold,
+          ), // Texto en negrita con Poppins
+        ),
         centerTitle: true,
         elevation: 0,
         backgroundColor:
             themeProvider.isDarkMode ? Colors.grey[900] : Colors.green,
-        titleTextStyle: TextStyle(
+        titleTextStyle: GoogleFonts.poppins(
           fontSize: 23,
-          fontWeight: FontWeight.bold,
-          fontFamily: 'Roboto',
+          fontWeight: FontWeight.bold, // Texto en negrita con Poppins
         ),
         leading: IconButton(
           icon: Icon(Icons.bluetooth),
@@ -124,6 +142,7 @@ class PlantSelectionScreen extends StatelessWidget {
           IconButton(
             icon: Icon(
               themeProvider.isDarkMode ? Icons.light_mode : Icons.dark_mode,
+              color: themeProvider.isDarkMode ? Colors.yellow : Colors.white,
             ),
             onPressed: () {
               themeProvider.toggleTheme();
@@ -137,7 +156,7 @@ class PlantSelectionScreen extends StatelessWidget {
           children: [
             Text(
               "Selecciona tu planta",
-              style: TextStyle(
+              style: GoogleFonts.poppins(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
                 color: themeProvider.isDarkMode ? Colors.white : Colors.green,
@@ -152,11 +171,21 @@ class PlantSelectionScreen extends StatelessWidget {
                     return Center(child: CircularProgressIndicator());
                   }
                   if (snapshot.hasError) {
-                    return Center(child: Text("Error al cargar las plantas"));
+                    return Center(
+                      child: Text(
+                        "Error al cargar las plantas",
+                        style: GoogleFonts.poppins(),
+                      ),
+                    );
                   }
                   if (!snapshot.hasData ||
                       snapshot.data!.snapshot.value == null) {
-                    return Center(child: Text("No hay plantas disponibles"));
+                    return Center(
+                      child: Text(
+                        "No hay plantas disponibles",
+                        style: GoogleFonts.poppins(),
+                      ),
+                    );
                   }
 
                   final plantsMap =
@@ -216,7 +245,7 @@ class PlantSelectionScreen extends StatelessWidget {
                                   SizedBox(height: 10),
                                   Text(
                                     plantName,
-                                    style: TextStyle(
+                                    style: GoogleFonts.poppins(
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold,
                                       color:

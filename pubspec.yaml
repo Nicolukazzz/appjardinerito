@@ -43,11 +43,11 @@ dependencies:
   animate_do: ^4.2.0
   flutter_spinkit: ^5.2.1
   flutter_launcher_icons: ^0.14.3
-
+  google_fonts: ^6.2.1
 flutter_icons:
   android: true
   ios: true
-  image_path: "lib/assets/ico.png"  # Ruta de tu icono
+  image_path: "assets/ico.png"  # Ruta de tu icono
 
 dev_dependencies:
   flutter_test:
@@ -72,7 +72,8 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
+  assets:
+    - assets/ico.png
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 

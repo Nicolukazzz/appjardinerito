@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart'; // Importa las opciones de Firebase
 import 'package:provider/provider.dart'; // Para manejar el estado del tema
-import 'package:appjardinerito/presentation/plant_selection_screen.dart'; // Nueva palla de selección
+//import 'package:appjardinerito/presentation/plant_selection_screen.dart'; // Nueva palla de selección
+import 'package:appjardinerito/presentation/splash_screen.dart'; // Pantalla de inicio
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,8 +30,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Jardinerito',
       theme: themeProvider.themeData, // Usa el tema actual
-      home:
-          PlantSelectionScreen(), // Comienza en la pantalla de selección de plantas
+      home: SplashScreen(), // Inicia con la pantalla de inicio para redirigir
     );
   }
 }
