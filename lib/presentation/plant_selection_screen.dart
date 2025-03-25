@@ -4,110 +4,9 @@ import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart'; // Importa Google Fonts
 import 'package:appjardinerito/main.dart'; // Importa ThemeProvider
 import 'data_screen.dart';
-import 'blue_screen.dart';
 
 class PlantSelectionScreen extends StatelessWidget {
   final DatabaseReference _databaseRef = FirebaseDatabase.instance.ref();
-
-  void _showCreatePlantDialog(BuildContext context) {
-    final TextEditingController _nameController = TextEditingController();
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text("Crear nueva planta", style: GoogleFonts.poppins()),
-          content: TextField(
-            controller: _nameController,
-            decoration: InputDecoration(
-              hintText: "Nombre de la planta",
-              hintStyle: GoogleFonts.poppins(),
-            ),
-            style: GoogleFonts.poppins(),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: Text("Cancelar", style: GoogleFonts.poppins()),
-            ),
-            TextButton(
-              onPressed: () {
-                final plantName = _nameController.text.trim();
-                if (plantName.isNotEmpty) {
-                  _createNewPlant(plantName);
-                  Navigator.pop(context);
-                }
-              },
-              child: Text("Crear", style: GoogleFonts.poppins()),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _createNewPlant(String plantName) {
-    final newPlantRef = _databaseRef.child('plantas10').child(plantName);
-    newPlantRef
-        .set({'humedad': '0%', 'luz': '0%', 'temperatura': '0°C', 'ph': '0'})
-        .then((_) {
-          print("Planta creada exitosamente: $plantName");
-        })
-        .catchError((error) {
-          print("Error al crear la planta: $error");
-        });
-  }
-
-  void _showDeleteConfirmationDialog(BuildContext context, String plantName) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text("Eliminar planta", style: GoogleFonts.poppins()),
-          content: Text(
-            "¿Estás seguro de que deseas eliminar esta planta?",
-            style: GoogleFonts.poppins(),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: Text(
-                "Cancelar",
-                style: GoogleFonts.poppins(color: Colors.grey),
-              ),
-            ),
-            TextButton(
-              onPressed: () {
-                _deletePlant(plantName);
-                Navigator.pop(context);
-              },
-              child: Text(
-                "Eliminar",
-                style: GoogleFonts.poppins(color: Colors.red),
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _deletePlant(String plantName) {
-    _databaseRef
-        .child('plantas10')
-        .child(plantName)
-        .remove()
-        .then((_) {
-          print("Planta eliminada exitosamente: $plantName");
-        })
-        .catchError((error) {
-          print("Error al eliminar la planta: $error");
-        });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -129,26 +28,6 @@ class PlantSelectionScreen extends StatelessWidget {
           fontSize: 23,
           fontWeight: FontWeight.bold, // Texto en negrita con Poppins
         ),
-        leading: IconButton(
-          icon: Icon(Icons.bluetooth),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => BluetoothScreen()),
-            );
-          },
-        ),
-        actions: [
-          IconButton(
-            icon: Icon(
-              themeProvider.isDarkMode ? Icons.light_mode : Icons.dark_mode,
-              color: themeProvider.isDarkMode ? Colors.yellow : Colors.white,
-            ),
-            onPressed: () {
-              themeProvider.toggleTheme();
-            },
-          ),
-        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -210,12 +89,9 @@ class PlantSelectionScreen extends StatelessWidget {
                             context,
                             MaterialPageRoute(
                               builder:
-                                  (context) => HomeScreen(plantId: plant.key),
+                                  (context) => DataScreen(plantId: plant.key),
                             ),
                           );
-                        },
-                        onLongPress: () {
-                          _showDeleteConfirmationDialog(context, plantName);
                         },
                         child: AnimatedContainer(
                           duration: Duration(milliseconds: 200),
@@ -268,13 +144,6 @@ class PlantSelectionScreen extends StatelessWidget {
             ),
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          _showCreatePlantDialog(context);
-        },
-        child: Icon(Icons.add),
-        backgroundColor: themeProvider.isDarkMode ? Colors.green : Colors.green,
       ),
     );
   }

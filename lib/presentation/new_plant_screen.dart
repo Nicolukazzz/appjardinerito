@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart'; // Importa Google Fonts
 import 'package:appjardinerito/main.dart';
-import 'simple_plant_selection_screen.dart';
+import 'add_plant_screen.dart';
 import 'my_garden_screen.dart';
 import 'new_plant_form_screen.dart';
 
@@ -115,7 +115,7 @@ class NewPlantScreen extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => SimplePlantSelectionScreen(),
+                          builder: (context) => AddPlantScreen(),
                         ),
                       );
                     },

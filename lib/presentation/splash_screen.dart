@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:appjardinerito/presentation/new_plant_screen.dart'; // Importa NewPlantScreen
+import 'package:appjardinerito/presentation/home_screen.dart'; // Importa NewPlantScreen
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -18,7 +18,7 @@ class _SplashScreenState extends State<SplashScreen> {
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (context) => NewPlantScreen(),
+        builder: (context) => HomeScreen(),
       ), // Redirige a NewPlantScreen
     );
   }
