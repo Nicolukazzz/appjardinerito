@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:appjardinerito/main.dart';
-import 'blue_screen.dart';
+import 'bluetooth_screen.dart';
 import 'plant_selection_screen.dart';
 
 class SettingsScreen extends StatelessWidget {

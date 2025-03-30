@@ -5,7 +5,8 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:appjardinerito/main.dart';
-import 'uart_chat.dart';
+import 'package:appjardinerito/presentation/bluetooth_provider.dart';
+import 'home_screen.dart';
 
 class BluetoothScreen extends StatefulWidget {
   @override
@@ -14,9 +15,7 @@ class BluetoothScreen extends StatefulWidget {
 
 class _BluetoothScreenState extends State<BluetoothScreen> {
   List<BluetoothDevice> _devicesList = [];
-  BluetoothDevice? _connectedDevice;
   bool _isScanning = false;
-  bool _isConnected = false;
   bool _hasPermissions = false;
   String? _statusMessage;
 
@@ -110,6 +109,11 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
   }
 
   void _connectToDevice(BluetoothDevice device) async {
+    final bluetoothProvider = Provider.of<BluetoothProvider>(
+      context,
+      listen: false,
+    );
+
     setState(() {
       _isScanning = true;
       _statusMessage = "Conectando...";
@@ -131,18 +135,13 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
         }
       }
 
-      setState(() {
-        _connectedDevice = device;
-        _isConnected = true;
-      });
+      bluetoothProvider.setConnectedDevice(device); // Persiste el dispositivo
 
-      Navigator.pushReplacement(
+      // Cambia esta línea para navegar a HomeScreen en lugar de UartChat
+      Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(
-          builder:
-              (context) =>
-                  UartChat(device: device, characteristic: uartCharacteristic),
-        ),
+        MaterialPageRoute(builder: (context) => HomeScreen()),
+        (route) => false, // Esto elimina todas las pantallas previas
       );
     } catch (e) {
       _showStatusMessage("Error al conectar: ${e.toString()}");
@@ -153,149 +152,16 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
     }
   }
 
-  void _disconnectDevice() async {
-    if (_connectedDevice != null) {
-      await _connectedDevice!.disconnect();
-      setState(() {
-        _connectedDevice = null;
-        _isConnected = false;
-        _statusMessage = "Desconectado";
-      });
-    }
+  void _disconnectDevice() {
+    Provider.of<BluetoothProvider>(context, listen: false).disconnectDevice();
+    setState(() => _statusMessage = "Desconectado");
   }
 
   void _showStatusMessage(String message) {
     setState(() => _statusMessage = message);
     Future.delayed(Duration(seconds: 3), () {
-      if (mounted) {
-        setState(() => _statusMessage = null);
-      }
+      if (mounted) setState(() => _statusMessage = null);
     });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final themeProvider = Provider.of<ThemeProvider>(context);
-    final isDarkMode = themeProvider.isDarkMode;
-    final Color primaryColor =
-        isDarkMode ? Colors.green[700]! : Color(0xFF487363);
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "Conexión Bluetooth",
-          style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
-        ),
-        centerTitle: true,
-        elevation: 0,
-        backgroundColor: isDarkMode ? Colors.grey[900] : Colors.green,
-        titleTextStyle: GoogleFonts.poppins(
-          fontSize: 23,
-          fontWeight: FontWeight.bold,
-        ),
-        actions: [
-          if (_isConnected)
-            IconButton(
-              icon: Icon(Icons.close, color: Colors.white),
-              onPressed: _disconnectDevice,
-            ),
-        ],
-      ),
-      backgroundColor: isDarkMode ? Colors.black : Colors.white,
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            if (_statusMessage != null)
-              Container(
-                padding: EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: isDarkMode ? Colors.grey[800] : Colors.blue[50],
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.info,
-                      size: 20,
-                      color: isDarkMode ? Colors.green[300] : primaryColor,
-                    ),
-                    SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        _statusMessage!,
-                        style: GoogleFonts.poppins(),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            SizedBox(height: 16),
-            if (!_hasPermissions)
-              _buildPermissionWarning(context, isDarkMode, primaryColor)
-            else if (_isScanning && _devicesList.isEmpty)
-              _buildScanningIndicator(isDarkMode)
-            else if (_devicesList.isEmpty)
-              _buildNoDevicesFound(isDarkMode, primaryColor)
-            else
-              Expanded(
-                child: ListView.builder(
-                  itemCount: _devicesList.length,
-                  itemBuilder: (context, index) {
-                    final device = _devicesList[index];
-                    return Card(
-                      elevation: 2,
-                      margin: EdgeInsets.symmetric(vertical: 6),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      color: isDarkMode ? Colors.grey[800] : Colors.white,
-                      child: ListTile(
-                        leading: Icon(Icons.bluetooth, color: primaryColor),
-                        title: Text(
-                          device.name,
-                          style: GoogleFonts.poppins(
-                            fontWeight: FontWeight.w500,
-                            color: isDarkMode ? Colors.white : Colors.black,
-                          ),
-                        ),
-                        subtitle: Text(
-                          device.remoteId.toString(),
-                          style: GoogleFonts.poppins(
-                            fontSize: 12,
-                            color:
-                                isDarkMode
-                                    ? Colors.grey[400]
-                                    : Colors.grey[600],
-                          ),
-                        ),
-                        trailing: Icon(
-                          Icons.arrow_forward_ios,
-                          size: 16,
-                          color:
-                              isDarkMode ? Colors.grey[400] : Colors.grey[600],
-                        ),
-                        onTap: () => _connectToDevice(device),
-                      ),
-                    );
-                  },
-                ),
-              ),
-          ],
-        ),
-      ),
-      floatingActionButton:
-          !_isConnected && _hasPermissions
-              ? FloatingActionButton(
-                backgroundColor: primaryColor,
-                child: Icon(
-                  _isScanning ? Icons.hourglass_top : Icons.search,
-                  color: Colors.white,
-                ),
-                onPressed: _isScanning ? null : _startScan,
-              )
-              : null,
-    );
   }
 
   Widget _buildPermissionWarning(
@@ -402,6 +268,132 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDarkMode = themeProvider.isDarkMode;
+    final bluetoothProvider = Provider.of<BluetoothProvider>(context);
+    final Color primaryColor =
+        isDarkMode ? Colors.green[700]! : Color(0xFF487363);
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          "Conexión Bluetooth",
+          style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+        ),
+        centerTitle: true,
+        elevation: 0,
+        backgroundColor: isDarkMode ? Colors.grey[900] : Colors.green,
+        titleTextStyle: GoogleFonts.poppins(
+          fontSize: 23,
+          fontWeight: FontWeight.bold,
+        ),
+        actions: [
+          if (bluetoothProvider.isConnected)
+            IconButton(
+              icon: Icon(Icons.close, color: Colors.white),
+              onPressed: _disconnectDevice,
+            ),
+        ],
+      ),
+      backgroundColor: isDarkMode ? Colors.black : Colors.white,
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            if (_statusMessage != null)
+              Container(
+                padding: EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: isDarkMode ? Colors.grey[800] : Colors.blue[50],
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.info,
+                      size: 20,
+                      color: isDarkMode ? Colors.green[300] : primaryColor,
+                    ),
+                    SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        _statusMessage!,
+                        style: GoogleFonts.poppins(),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            SizedBox(height: 16),
+            if (!_hasPermissions)
+              _buildPermissionWarning(context, isDarkMode, primaryColor)
+            else if (_isScanning && _devicesList.isEmpty)
+              _buildScanningIndicator(isDarkMode)
+            else if (_devicesList.isEmpty)
+              _buildNoDevicesFound(isDarkMode, primaryColor)
+            else
+              Expanded(
+                child: ListView.builder(
+                  itemCount: _devicesList.length,
+                  itemBuilder: (context, index) {
+                    final device = _devicesList[index];
+                    return Card(
+                      elevation: 2,
+                      margin: EdgeInsets.symmetric(vertical: 6),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      color: isDarkMode ? Colors.grey[800] : Colors.white,
+                      child: ListTile(
+                        leading: Icon(Icons.bluetooth, color: primaryColor),
+                        title: Text(
+                          device.name,
+                          style: GoogleFonts.poppins(
+                            fontWeight: FontWeight.w500,
+                            color: isDarkMode ? Colors.white : Colors.black,
+                          ),
+                        ),
+                        subtitle: Text(
+                          device.remoteId.toString(),
+                          style: GoogleFonts.poppins(
+                            fontSize: 12,
+                            color:
+                                isDarkMode
+                                    ? Colors.grey[400]
+                                    : Colors.grey[600],
+                          ),
+                        ),
+                        trailing: Icon(
+                          Icons.arrow_forward_ios,
+                          size: 16,
+                          color:
+                              isDarkMode ? Colors.grey[400] : Colors.grey[600],
+                        ),
+                        onTap: () => _connectToDevice(device),
+                      ),
+                    );
+                  },
+                ),
+              ),
+          ],
+        ),
+      ),
+      floatingActionButton:
+          !bluetoothProvider.isConnected && _hasPermissions
+              ? FloatingActionButton(
+                backgroundColor: primaryColor,
+                child: Icon(
+                  _isScanning ? Icons.hourglass_top : Icons.search,
+                  color: Colors.white,
+                ),
+                onPressed: _isScanning ? null : _startScan,
+              )
+              : null,
     );
   }
 }

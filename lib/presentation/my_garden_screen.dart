@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:provider/provider.dart';
-import 'package:google_fonts/google_fonts.dart'; // Importa Google Fonts
+import 'package:google_fonts/google_fonts.dart';
 import 'package:appjardinerito/main.dart';
+import 'package:appjardinerito/presentation/bluetooth_provider.dart';
+import 'sensor_data_screen.dart';
 
 class MyGardenScreen extends StatelessWidget {
   final DatabaseReference _gardenRef = FirebaseDatabase.instance.ref().child(
@@ -10,34 +12,93 @@ class MyGardenScreen extends StatelessWidget {
   );
 
   void _deletePlant(BuildContext context, String plantName) {
-    _gardenRef
-        .child(plantName)
-        .remove()
-        .then((_) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                "Planta eliminada: $plantName",
-                style: GoogleFonts.poppins(),
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor:
+              Provider.of<ThemeProvider>(context).isDarkMode
+                  ? Colors.grey[900]
+                  : Colors.white,
+          title: Text(
+            "Eliminar planta",
+            style: GoogleFonts.poppins(
+              fontWeight: FontWeight.bold,
+              color:
+                  Provider.of<ThemeProvider>(context).isDarkMode
+                      ? Colors.white
+                      : Colors.black,
+            ),
+          ),
+          content: Text(
+            "¿Estás seguro de eliminar $plantName de tu jardín?",
+            style: GoogleFonts.poppins(fontSize: 17),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(
+                "Cancelar",
+                style: GoogleFonts.poppins(
+                  color: Colors.grey,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
-          );
-        })
-        .catchError((error) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                "Error al eliminar la planta",
-                style: GoogleFonts.poppins(),
+            TextButton(
+              onPressed: () {
+                _gardenRef
+                    .child(plantName)
+                    .remove()
+                    .then((_) {
+                      Navigator.pop(context);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            "Planta eliminada: $plantName",
+                            style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          backgroundColor: Colors.green,
+                        ),
+                      );
+                    })
+                    .catchError((error) {
+                      Navigator.pop(context);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            "Error al eliminar la planta",
+                            style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                    });
+              },
+              child: Text(
+                "Eliminar",
+                style: GoogleFonts.poppins(
+                  color: Colors.red,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
-          );
-        });
+          ],
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDarkMode = themeProvider.isDarkMode;
+    final bluetoothProvider = Provider.of<BluetoothProvider>(context);
+    final primaryGreen = Colors.green;
 
     return Scaffold(
       appBar: AppBar(
@@ -45,17 +106,18 @@ class MyGardenScreen extends StatelessWidget {
           "Mi Jardín",
           style: GoogleFonts.poppins(
             fontWeight: FontWeight.bold,
-          ), // Texto en negrita con Poppins
+            color: Colors.white,
+          ),
         ),
         centerTitle: true,
         elevation: 0,
-        backgroundColor:
-            themeProvider.isDarkMode ? Colors.grey[900] : Colors.green,
+        backgroundColor: isDarkMode ? Colors.grey[900] : Colors.green,
         titleTextStyle: GoogleFonts.poppins(
           fontSize: 23,
-          fontWeight: FontWeight.bold, // Texto en negrita con Poppins
+          fontWeight: FontWeight.bold,
         ),
       ),
+      backgroundColor: isDarkMode ? Colors.black : Colors.white,
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -66,22 +128,41 @@ class MyGardenScreen extends StatelessWidget {
                 stream: _gardenRef.onValue,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(child: CircularProgressIndicator());
+                    return Center(
+                      child: CircularProgressIndicator(color: primaryGreen),
+                    );
                   }
                   if (snapshot.hasError) {
                     return Center(
                       child: Text(
                         "Error al cargar las plantas",
-                        style: GoogleFonts.poppins(),
+                        style: GoogleFonts.poppins(
+                          fontSize: 18,
+                          color: isDarkMode ? Colors.white : Colors.black,
+                        ),
                       ),
                     );
                   }
                   if (!snapshot.hasData ||
                       snapshot.data!.snapshot.value == null) {
                     return Center(
-                      child: Text(
-                        "No tienes plantas en tu jardín",
-                        style: GoogleFonts.poppins(),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.local_florist,
+                            size: 50,
+                            color: Colors.grey,
+                          ),
+                          SizedBox(height: 16),
+                          Text(
+                            "No tienes plantas en tu jardín",
+                            style: GoogleFonts.poppins(
+                              fontSize: 18,
+                              color: isDarkMode ? Colors.white : Colors.black,
+                            ),
+                          ),
+                        ],
                       ),
                     );
                   }
@@ -103,21 +184,37 @@ class MyGardenScreen extends StatelessWidget {
                       final plantName = plant.key;
 
                       return GestureDetector(
-                        onLongPress: () {
-                          _deletePlant(
+                        onTap: () {
+                          if (!bluetoothProvider.isConnected) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  "Conecta un dispositivo Bluetooth primero",
+                                  style: GoogleFonts.poppins(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                            return;
+                          }
+                          Navigator.push(
                             context,
-                            plantName,
-                          ); // Eliminar planta de "Mi Jardín"
+                            MaterialPageRoute(
+                              builder:
+                                  (context) =>
+                                      SensorDataScreen(plantId: plantName),
+                            ),
+                          );
                         },
+                        onLongPress: () => _deletePlant(context, plantName),
                         child: Card(
                           elevation: 3,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(15),
                           ),
-                          color:
-                              themeProvider.isDarkMode
-                                  ? Colors.grey[800]
-                                  : Colors.white,
+                          color: isDarkMode ? Colors.grey[800] : Colors.white,
                           child: Container(
                             padding: const EdgeInsets.all(16.0),
                             child: Column(
@@ -126,7 +223,7 @@ class MyGardenScreen extends StatelessWidget {
                                 Icon(
                                   Icons.local_florist,
                                   size: 50,
-                                  color: Colors.green,
+                                  color: primaryGreen,
                                 ),
                                 SizedBox(height: 10),
                                 Text(
@@ -134,10 +231,7 @@ class MyGardenScreen extends StatelessWidget {
                                   style: GoogleFonts.poppins(
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold,
-                                    color:
-                                        themeProvider.isDarkMode
-                                            ? Colors.white
-                                            : Colors.green,
+                                    color: primaryGreen,
                                   ),
                                   textAlign: TextAlign.center,
                                 ),
