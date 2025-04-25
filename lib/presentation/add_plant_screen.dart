@@ -74,15 +74,19 @@ class _AddPlantScreenState extends State<AddPlantScreen> {
     final themeProvider = Provider.of<ThemeProvider>(context);
 
     return Scaffold(
+      backgroundColor: themeProvider.isDarkMode ? Colors.black : Colors.white,
       appBar: AppBar(
         title: Text(
           _showConfirmation ? "" : "Selecciona una planta",
-          style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+          style: GoogleFonts.poppins(
+            fontWeight: FontWeight.bold,
+            color: Colors.green,
+          ),
         ),
         centerTitle: true,
         elevation: 0,
         backgroundColor:
-            themeProvider.isDarkMode ? Colors.grey[900] : Colors.green,
+            themeProvider.isDarkMode ? Colors.grey[900] : Colors.white,
         titleTextStyle: GoogleFonts.poppins(
           fontSize: 23,
           fontWeight: FontWeight.bold,
@@ -153,7 +157,7 @@ class _AddPlantScreenState extends State<AddPlantScreen> {
                         ),
                         color:
                             themeProvider.isDarkMode
-                                ? Colors.grey[800]
+                                ? Colors.grey[900]
                                 : Colors.white,
                         child: Container(
                           padding: const EdgeInsets.all(16.0),
@@ -213,7 +217,7 @@ class _AddPlantScreenState extends State<AddPlantScreen> {
                 backgroundColor:
                     Provider.of<ThemeProvider>(context).isDarkMode
                         ? Colors.green[700]
-                        : Color(0xFF487363),
+                        : Colors.grey[900],
               ),
               onPressed: _resetSelection,
               child: Text(

@@ -7,6 +7,7 @@ import 'dart:convert';
 import 'dart:async';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:appjardinerito/presentation/bluetooth_provider.dart';
+import 'calendar_screen.dart';
 
 class SensorDataScreen extends StatefulWidget {
   final String plantId;
@@ -142,29 +143,42 @@ class _SensorDataScreenState extends State<SensorDataScreen> {
   }
 
   Future<void> _registerAction() async {
-    final prefs = await SharedPreferences.getInstance();
-    final jsonString = prefs.getString('plant_actions') ?? '{}';
-    final savedActions = json.decode(jsonString);
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final jsonString = prefs.getString('plant_actions') ?? '{}';
+      final savedActions = json.decode(jsonString) as Map<String, dynamic>;
 
-    final dateKey = DateTime.now().toIso8601String().substring(0, 10);
-    savedActions[dateKey] ??= [];
+      final now = DateTime.now();
+      final dateKey = now.toIso8601String().substring(0, 10);
+      final formattedTime =
+          '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
 
-    savedActions[dateKey].add({
-      'planta': widget.plantId,
-      'accion': _selectedAction,
-    });
+      savedActions[dateKey] ??= [];
+      (savedActions[dateKey] as List).add({
+        'planta': widget.plantId,
+        'accion': _selectedAction,
+        'fecha': formattedTime, // Guardamos solo hora:minutos
+        'fecha_completa':
+            now.toIso8601String(), // Opcional: guardamos fecha completa por si necesitas ordenar
+      });
 
-    await prefs.setString('plant_actions', json.encode(savedActions));
+      await prefs.setString('plant_actions', json.encode(savedActions));
+      await CalendarScreen.refresh(context);
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          "Acción registrada: $_selectedAction",
-          style: GoogleFonts.poppins(),
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Acción registrada: $_selectedAction"),
+          backgroundColor: Colors.green,
         ),
-        backgroundColor: Colors.green,
-      ),
-    );
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Error al registrar acción: $e"),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   void _showActionDialog() {

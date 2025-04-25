@@ -106,12 +106,12 @@ class MyGardenScreen extends StatelessWidget {
           "Mi Jardín",
           style: GoogleFonts.poppins(
             fontWeight: FontWeight.bold,
-            color: Colors.white,
+            color: Colors.green,
           ),
         ),
         centerTitle: true,
         elevation: 0,
-        backgroundColor: isDarkMode ? Colors.grey[900] : Colors.green,
+        backgroundColor: isDarkMode ? Colors.grey[900] : Colors.white,
         titleTextStyle: GoogleFonts.poppins(
           fontSize: 23,
           fontWeight: FontWeight.bold,
@@ -152,7 +152,7 @@ class MyGardenScreen extends StatelessWidget {
                           Icon(
                             Icons.local_florist,
                             size: 50,
-                            color: Colors.grey,
+                            color: Colors.grey[900],
                           ),
                           SizedBox(height: 16),
                           Text(
@@ -214,7 +214,7 @@ class MyGardenScreen extends StatelessWidget {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(15),
                           ),
-                          color: isDarkMode ? Colors.grey[800] : Colors.white,
+                          color: isDarkMode ? Colors.grey[900] : Colors.white,
                           child: Container(
                             padding: const EdgeInsets.all(16.0),
                             child: Column(

@@ -53,6 +53,8 @@ class ThemeProvider with ChangeNotifier {
 
   static final ThemeData _darkTheme = ThemeData(
     primarySwatch: Colors.green,
+    scaffoldBackgroundColor:
+        Colors.grey[900], // Fondo gris oscuro en modo claro
     brightness: Brightness.dark,
     visualDensity: VisualDensity.adaptivePlatformDensity,
   );

@@ -5,7 +5,7 @@ import 'package:appjardinerito/main.dart';
 import 'my_garden_screen.dart';
 import 'add_plant_screen.dart';
 import 'settings_screen.dart';
-import 'calendar_screen.dart'; // Importar la pantalla del calendario
+import 'calendar_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -18,7 +18,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final List<Widget> _screens = [
     MyGardenScreen(),
     AddPlantScreen(),
-    CalendarScreen(), // ✅ Agregado
+    CalendarScreen(),
     SettingsScreen(),
   ];
 
@@ -55,25 +55,21 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: isDarkMode ? Colors.black : Colors.white,
       body: IndexedStack(index: _currentIndex, children: _screens),
       bottomNavigationBar: Container(
+        margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         decoration: BoxDecoration(
-          color: isDarkMode ? Colors.grey[900] : Colors.green,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(30),
-            topRight: Radius.circular(30),
-          ),
+          borderRadius: BorderRadius.circular(30),
+          color: isDarkMode ? Colors.grey[800] : Colors.green[600],
           boxShadow: [
             BoxShadow(
-              color: Colors.black26,
+              color: Colors.black.withOpacity(0.2),
               blurRadius: 10,
-              offset: Offset(0, -2),
+              spreadRadius: 2,
+              offset: Offset(0, 3),
             ),
           ],
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(30),
-            topRight: Radius.circular(30),
-          ),
+          borderRadius: BorderRadius.circular(30),
           child: BottomNavigationBar(
             currentIndex: _currentIndex,
             onTap: (index) => setState(() => _currentIndex = index),
@@ -81,30 +77,78 @@ class _HomeScreenState extends State<HomeScreen> {
             elevation: 0,
             selectedItemColor: Colors.white,
             unselectedItemColor:
-                isDarkMode ? Colors.grey[400] : Colors.grey[200],
+                isDarkMode ? Colors.grey[400] : Colors.green[100],
             type: BottomNavigationBarType.fixed,
+            showSelectedLabels: true,
+            showUnselectedLabels: true,
+            selectedFontSize: 12,
+            unselectedFontSize: 11,
             items: [
               BottomNavigationBarItem(
-                icon: Icon(Icons.eco),
+                icon: Container(
+                  padding: EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    color:
+                        _currentIndex == 0
+                            ? Colors.white.withOpacity(0.2)
+                            : Colors.transparent,
+                  ),
+                  child: Icon(Icons.eco, size: 24),
+                ),
                 label: 'Mi Jardín',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.add_circle_outline),
+                icon: Container(
+                  padding: EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    color:
+                        _currentIndex == 1
+                            ? Colors.white.withOpacity(0.2)
+                            : Colors.transparent,
+                  ),
+                  child: Icon(Icons.add_circle_outline, size: 24),
+                ),
                 label: 'Agregar',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.calendar_today),
+                icon: Container(
+                  padding: EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    color:
+                        _currentIndex == 2
+                            ? Colors.white.withOpacity(0.2)
+                            : Colors.transparent,
+                  ),
+                  child: Icon(Icons.calendar_today, size: 24),
+                ),
                 label: 'Calendario',
-              ), // ✅ Nuevo botón
+              ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.settings),
+                icon: Container(
+                  padding: EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    color:
+                        _currentIndex == 3
+                            ? Colors.white.withOpacity(0.2)
+                            : Colors.transparent,
+                  ),
+                  child: Icon(Icons.settings, size: 24),
+                ),
                 label: 'Config.',
               ),
             ],
             selectedLabelStyle: GoogleFonts.poppins(
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w600,
+              fontSize: 12,
             ),
-            unselectedLabelStyle: GoogleFonts.poppins(),
+            unselectedLabelStyle: GoogleFonts.poppins(
+              fontWeight: FontWeight.w500,
+              fontSize: 11,
+            ),
           ),
         ),
       ),

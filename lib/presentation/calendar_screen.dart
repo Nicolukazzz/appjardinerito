@@ -10,6 +10,13 @@ import 'package:appjardinerito/main.dart';
 class CalendarScreen extends StatefulWidget {
   @override
   _CalendarScreenState createState() => _CalendarScreenState();
+
+  static Future<void> refresh(BuildContext context) async {
+    final state = context.findAncestorStateOfType<_CalendarScreenState>();
+    if (state != null && state.mounted) {
+      await state._loadSavedActions();
+    }
+  }
 }
 
 class _CalendarScreenState extends State<CalendarScreen> {
@@ -26,9 +33,13 @@ class _CalendarScreenState extends State<CalendarScreen> {
   Future<void> _loadSavedActions() async {
     final prefs = await SharedPreferences.getInstance();
     final jsonString = prefs.getString('plant_actions') ?? '{}';
-    setState(() {
-      _savedActions = json.decode(jsonString);
-    });
+
+    if (mounted) {
+      setState(() {
+        _savedActions = json.decode(jsonString);
+        print('Acciones cargadas: $_savedActions'); // Debug
+      });
+    }
   }
 
   List<dynamic> _getEventsForDay(DateTime day) {
@@ -66,10 +77,13 @@ class _CalendarScreenState extends State<CalendarScreen> {
           child: ListTile(
             leading: Icon(Icons.local_florist, color: Colors.green),
             title: Text(
-              entry['planta'],
+              '${entry['planta']} - ${entry['accion']}',
               style: GoogleFonts.poppins(fontWeight: FontWeight.w500),
             ),
-            subtitle: Text(entry['accion'], style: GoogleFonts.poppins()),
+            subtitle: Text(
+              'Hora: ${entry['fecha']}', // Muestra solo hora:minutos
+              style: GoogleFonts.poppins(fontSize: 12),
+            ),
           ),
         );
       }).toList(),
@@ -85,13 +99,23 @@ class _CalendarScreenState extends State<CalendarScreen> {
       appBar: AppBar(
         title: Text(
           "Historial de Cuidados",
-          style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+          style: GoogleFonts.poppins(
+            fontWeight: FontWeight.bold,
+            color: Colors.green,
+          ),
         ),
         centerTitle: true,
-        backgroundColor: isDark ? Colors.grey[900] : Colors.green,
+        backgroundColor: isDark ? Colors.grey[900] : Colors.white,
         elevation: 0,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.refresh),
+            onPressed: _loadSavedActions,
+            tooltip: 'Actualizar',
+          ),
+        ],
       ),
-      backgroundColor: isDark ? Colors.grey[900] : Colors.grey[50],
+      backgroundColor: isDark ? Colors.black : Colors.white,
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -109,6 +133,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                     firstDay: DateTime(2023),
                     lastDay: DateTime(2100),
                     focusedDay: _focusedDay,
+                    calendarFormat: CalendarFormat.month,
                     selectedDayPredicate: (day) => isSameDay(day, _selectedDay),
                     onDaySelected: (selectedDay, focusedDay) {
                       setState(() {
@@ -116,6 +141,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                         _focusedDay = focusedDay;
                       });
                     },
+                    onFormatChanged: (format) {},
                     onPageChanged: (focusedDay) {
                       _focusedDay = focusedDay;
                     },

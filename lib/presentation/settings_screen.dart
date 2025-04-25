@@ -14,21 +14,29 @@ class SettingsScreen extends StatelessWidget {
     final tileColor = isDarkMode ? Colors.grey[800] : Colors.grey[100];
 
     return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          "Configuración",
+          style: GoogleFonts.poppins(
+            fontWeight: FontWeight.bold,
+            color: Colors.green,
+          ),
+        ),
+        centerTitle: true,
+        elevation: 0,
+        backgroundColor: isDarkMode ? Colors.grey[900] : Colors.white,
+        titleTextStyle: GoogleFonts.poppins(
+          fontSize: 23,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
       backgroundColor: isDarkMode ? Colors.black : Colors.white,
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Configuración',
-              style: GoogleFonts.poppins(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-                color: isDarkMode ? Colors.white : Colors.black,
-              ),
-            ),
-            SizedBox(height: 20),
+            SizedBox(height: 8), // Espacio adicional después del AppBar
             Card(
               elevation: 2,
               shape: RoundedRectangleBorder(
@@ -49,14 +57,6 @@ class SettingsScreen extends StatelessWidget {
                             builder: (context) => BluetoothScreen(),
                           ),
                         ),
-                  ),
-                  Divider(height: 1, indent: 16, endIndent: 16),
-                  _buildSettingsTile(
-                    context: context,
-                    isDarkMode: isDarkMode,
-                    icon: Icons.science,
-                    title: "Calibrar sensores",
-                    onTap: () {},
                   ),
                   Divider(height: 1, indent: 16, endIndent: 16),
                   _buildSettingsTile(
