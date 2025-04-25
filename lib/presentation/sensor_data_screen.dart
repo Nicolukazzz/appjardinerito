@@ -5,7 +5,7 @@ import 'package:appjardinerito/main.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:convert';
 import 'dart:async';
-
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:appjardinerito/presentation/bluetooth_provider.dart';
 
 class SensorDataScreen extends StatefulWidget {
@@ -26,11 +26,14 @@ class _SensorDataScreenState extends State<SensorDataScreen> {
   bool _isLoading = false;
   String _statusMessage = 'Presiona el botón para medir';
   List<String> _recommendations = [];
+  String _selectedAction = 'Regada';
 
   double _humidity = 0;
   double _light = 0;
   double _temperature = 0;
   double _ph = 0;
+
+  final _actions = ['Regada', 'Cambiada de lugar', 'Cambiado el pH', 'Podada'];
 
   @override
   void initState() {
@@ -138,6 +141,87 @@ class _SensorDataScreenState extends State<SensorDataScreen> {
     }
   }
 
+  Future<void> _registerAction() async {
+    final prefs = await SharedPreferences.getInstance();
+    final jsonString = prefs.getString('plant_actions') ?? '{}';
+    final savedActions = json.decode(jsonString);
+
+    final dateKey = DateTime.now().toIso8601String().substring(0, 10);
+    savedActions[dateKey] ??= [];
+
+    savedActions[dateKey].add({
+      'planta': widget.plantId,
+      'accion': _selectedAction,
+    });
+
+    await prefs.setString('plant_actions', json.encode(savedActions));
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          "Acción registrada: $_selectedAction",
+          style: GoogleFonts.poppins(),
+        ),
+        backgroundColor: Colors.green,
+      ),
+    );
+  }
+
+  void _showActionDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("Registrar Acción", style: GoogleFonts.poppins()),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              DropdownButtonFormField<String>(
+                value: _selectedAction,
+                items:
+                    _actions
+                        .map(
+                          (action) => DropdownMenuItem(
+                            value: action,
+                            child: Text(action, style: GoogleFonts.poppins()),
+                          ),
+                        )
+                        .toList(),
+                onChanged: (value) {
+                  if (value != null) setState(() => _selectedAction = value);
+                },
+                decoration: InputDecoration(
+                  labelText: 'Acción realizada',
+                  labelStyle: GoogleFonts.poppins(),
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              SizedBox(height: 20),
+              Text(
+                "¿Deseas registrar esta acción para ${widget.plantId}?",
+                style: GoogleFonts.poppins(),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text("Cancelar", style: GoogleFonts.poppins()),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                _registerAction();
+                Navigator.pop(context);
+              },
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+              child: Text("Registrar", style: GoogleFonts.poppins()),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
@@ -157,6 +241,13 @@ class _SensorDataScreenState extends State<SensorDataScreen> {
         centerTitle: true,
         elevation: 0,
         backgroundColor: isDarkMode ? Colors.grey[900] : Colors.green,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.calendar_today),
+            onPressed: _showActionDialog,
+            tooltip: 'Registrar acción',
+          ),
+        ],
       ),
       backgroundColor: isDarkMode ? Colors.black : Colors.white,
       body: Column(
@@ -232,6 +323,23 @@ class _SensorDataScreenState extends State<SensorDataScreen> {
                       ],
                     ),
                   ),
+                  if (_recommendations.isNotEmpty) ...[
+                    SizedBox(height: 20),
+                    Text(
+                      "Recomendaciones:",
+                      style: GoogleFonts.poppins(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                        color: isDarkMode ? Colors.white : Colors.black,
+                      ),
+                    ),
+                    ..._recommendations.map(
+                      (rec) => ListTile(
+                        leading: Icon(Icons.info, color: Colors.green),
+                        title: Text(rec, style: GoogleFonts.poppins()),
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),
