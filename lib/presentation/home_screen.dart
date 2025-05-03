@@ -6,6 +6,7 @@ import 'my_garden_screen.dart';
 import 'add_plant_screen.dart';
 import 'settings_screen.dart';
 import 'calendar_screen.dart';
+import 'alvarito_blue_screen.dart'; // Importa la nueva pantalla
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -41,6 +42,7 @@ class _HomeScreenState extends State<HomeScreen> {
           fontWeight: FontWeight.bold,
         ),
         actions: [
+          // Botón del modo oscuro (lo movemos al principio)
           IconButton(
             icon: Icon(
               isDarkMode ? Icons.light_mode : Icons.dark_mode,
@@ -48,6 +50,25 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             onPressed: () {
               themeProvider.toggleTheme();
+            },
+          ),
+
+          // Espacio flexible entre los dos iconos
+          Spacer(),
+
+          // Nuevo botón con la imagen blue_icon.png
+          IconButton(
+            icon: Image.asset(
+              'assets/blue_icon.png', // Asegúrate de que la imagen esté en la carpeta assets
+              width: 24,
+              height: 24,
+              color: Colors.white, // Opcional: para darle un color consistente
+            ),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => AlvaritoBlueScreen()),
+              );
             },
           ),
         ],
