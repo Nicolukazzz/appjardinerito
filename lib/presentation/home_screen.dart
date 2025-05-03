@@ -30,7 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Jardinerito",
+          "My Garden",
           style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
