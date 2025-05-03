@@ -6,7 +6,7 @@ import 'my_garden_screen.dart';
 import 'add_plant_screen.dart';
 import 'settings_screen.dart';
 import 'calendar_screen.dart';
-import 'alvarito_blue_screen.dart'; // Importa la nueva pantalla
+import 'alvarito_blue_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -32,37 +32,27 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: Text(
           "My Garden",
-          style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+          style: GoogleFonts.poppins(
+            fontWeight: FontWeight.bold,
+            fontSize: 23,
+            color: Colors.white,
+          ),
         ),
         centerTitle: true,
         elevation: 0,
         backgroundColor: isDarkMode ? Colors.grey[900] : Colors.green,
-        titleTextStyle: GoogleFonts.poppins(
-          fontSize: 23,
-          fontWeight: FontWeight.bold,
+        leading: IconButton(
+          icon: Icon(
+            isDarkMode ? Icons.light_mode : Icons.dark_mode,
+            color: isDarkMode ? Colors.yellow : Colors.white,
+          ),
+          onPressed: () {
+            themeProvider.toggleTheme();
+          },
         ),
         actions: [
-          // Botón del modo oscuro (lo movemos al principio)
           IconButton(
-            icon: Icon(
-              isDarkMode ? Icons.light_mode : Icons.dark_mode,
-              color: isDarkMode ? Colors.yellow : Colors.white,
-            ),
-            onPressed: () {
-              themeProvider.toggleTheme();
-            },
-          ),
-
-          // Espacio flexible entre los dos iconos
-          Spacer(),
-
-          // Nuevo botón con la imagen blue_icon.png
-          IconButton(
-            icon: Image.asset(
-              'assets/blue_icon.png', // Asegúrate de que la imagen esté en la carpeta assets
-              width: 40,
-              height: 40, // Opcional: para darle un color consistente
-            ),
+            icon: Image.asset('assets/blue_icon.png', width: 30, height: 40),
             onPressed: () {
               Navigator.push(
                 context,
