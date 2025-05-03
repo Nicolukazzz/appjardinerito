@@ -60,9 +60,8 @@ class _HomeScreenState extends State<HomeScreen> {
           IconButton(
             icon: Image.asset(
               'assets/blue_icon.png', // Asegúrate de que la imagen esté en la carpeta assets
-              width: 24,
-              height: 24,
-              color: Colors.white, // Opcional: para darle un color consistente
+              width: 40,
+              height: 40, // Opcional: para darle un color consistente
             ),
             onPressed: () {
               Navigator.push(
