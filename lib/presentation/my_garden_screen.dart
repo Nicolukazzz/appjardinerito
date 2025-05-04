@@ -185,20 +185,6 @@ class MyGardenScreen extends StatelessWidget {
 
                       return GestureDetector(
                         onTap: () {
-                          if (!bluetoothProvider.isConnected) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  "Conecta un dispositivo Bluetooth primero",
-                                  style: GoogleFonts.poppins(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                backgroundColor: Colors.red,
-                              ),
-                            );
-                            return;
-                          }
                           Navigator.push(
                             context,
                             MaterialPageRoute(
