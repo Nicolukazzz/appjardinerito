@@ -7,7 +7,8 @@ import 'dart:convert';
 import 'dart:async';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:appjardinerito/presentation/bluetooth_provider.dart';
-import 'calendar_screen.dart';
+import 'package:appjardinerito/presentation/calendar_screen.dart';
+import 'package:appjardinerito/presentation/data_screen.dart';
 
 class SensorDataScreen extends StatefulWidget {
   final String plantId;
@@ -157,9 +158,8 @@ class _SensorDataScreenState extends State<SensorDataScreen> {
       (savedActions[dateKey] as List).add({
         'planta': widget.plantId,
         'accion': _selectedAction,
-        'fecha': formattedTime, // Guardamos solo hora:minutos
-        'fecha_completa':
-            now.toIso8601String(), // Opcional: guardamos fecha completa por si necesitas ordenar
+        'fecha': formattedTime,
+        'fecha_completa': now.toIso8601String(),
       });
 
       await prefs.setString('plant_actions', json.encode(savedActions));
@@ -233,6 +233,15 @@ class _SensorDataScreenState extends State<SensorDataScreen> {
           ],
         );
       },
+    );
+  }
+
+  void _showPlantDetails() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => DataScreen(plantId: widget.plantId),
+      ),
     );
   }
 
@@ -354,30 +363,87 @@ class _SensorDataScreenState extends State<SensorDataScreen> {
                       ),
                     ),
                   ],
+                  SizedBox(height: 20),
                 ],
               ),
             ),
           ),
+          // Nueva disposición de botones en la parte inferior
+          Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16.0,
+              vertical: 8.0,
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: _showPlantDetails,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: primaryColor,
+                      padding: EdgeInsets.symmetric(vertical: 15),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.info_outline, color: Colors.white),
+                        SizedBox(width: 8),
+                        Text(
+                          'Ver detalles',
+                          style: GoogleFonts.poppins(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(width: 10),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: _isLoading ? null : _takeMeasurements,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green[800],
+                      padding: EdgeInsets.symmetric(vertical: 15),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        _isLoading
+                            ? SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
+                            : Icon(Icons.sensors, color: Colors.white),
+                        SizedBox(width: 8),
+                        Text(
+                          'Medir',
+                          style: GoogleFonts.poppins(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: 10),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _isLoading ? null : _takeMeasurements,
-        backgroundColor: primaryColor,
-        icon:
-            _isLoading
-                ? CircularProgressIndicator(color: Colors.white)
-                : Icon(Icons.sensors, color: Colors.white),
-        label: Text(
-          'Medir',
-          style: GoogleFonts.poppins(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        elevation: 4,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 

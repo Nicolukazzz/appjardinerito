@@ -16,6 +16,16 @@ class _AddPlantScreenState extends State<AddPlantScreen> {
   );
   bool _showConfirmation = false;
   String _selectedPlantName = '';
+  String _searchQuery = '';
+  final TextEditingController _searchController = TextEditingController();
+  final FocusNode _searchFocusNode = FocusNode();
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _searchFocusNode.dispose();
+    super.dispose();
+  }
 
   void _addPlantToGarden(BuildContext context, String plantName) async {
     try {
@@ -29,6 +39,8 @@ class _AddPlantScreenState extends State<AddPlantScreen> {
         setState(() {
           _selectedPlantName = plantName;
           _showConfirmation = true;
+          _searchQuery = '';
+          _searchController.clear();
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
@@ -69,6 +81,60 @@ class _AddPlantScreenState extends State<AddPlantScreen> {
     });
   }
 
+  Widget _buildModernSearchField(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDarkMode = themeProvider.isDarkMode;
+
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 16),
+      decoration: BoxDecoration(
+        color: isDarkMode ? Colors.grey[800] : Colors.grey[100],
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 6,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: TextField(
+        controller: _searchController,
+        focusNode: _searchFocusNode,
+        onChanged: (value) {
+          setState(() {
+            _searchQuery = value.toLowerCase();
+          });
+        },
+        style: GoogleFonts.poppins(
+          fontSize: 16,
+          color: isDarkMode ? Colors.white : Colors.black,
+        ),
+        decoration: InputDecoration(
+          hintText: 'Buscar plantas...',
+          hintStyle: GoogleFonts.poppins(
+            color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
+          ),
+          prefixIcon: Icon(Icons.search, color: Colors.green),
+          suffixIcon:
+              _searchQuery.isNotEmpty
+                  ? IconButton(
+                    icon: Icon(Icons.close, color: Colors.grey),
+                    onPressed: () {
+                      _searchController.clear();
+                      setState(() {
+                        _searchQuery = '';
+                      });
+                    },
+                  )
+                  : null,
+          border: InputBorder.none,
+          contentPadding: EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
@@ -91,6 +157,16 @@ class _AddPlantScreenState extends State<AddPlantScreen> {
           fontSize: 23,
           fontWeight: FontWeight.bold,
         ),
+        bottom:
+            _showConfirmation
+                ? null
+                : PreferredSize(
+                  preferredSize: Size.fromHeight(60),
+                  child: Padding(
+                    padding: EdgeInsets.only(bottom: 10),
+                    child: _buildModernSearchField(context),
+                  ),
+                ),
       ),
       body:
           _showConfirmation
