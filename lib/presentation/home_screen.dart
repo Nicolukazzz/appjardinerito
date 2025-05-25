@@ -206,7 +206,7 @@ class _HomeScreenState extends State<HomeScreen> {
     ];
 
     return Positioned(
-      top: 20,
+      bottom: 10, // Ajustado para que esté encima de la barra de navegación
       left: 20,
       right: 20,
       child: Material(

@@ -110,7 +110,7 @@ class DataScreen extends StatelessWidget {
                   crossAxisCount: 2,
                   crossAxisSpacing: 15,
                   mainAxisSpacing: 15,
-                  childAspectRatio: 1.1,
+                  childAspectRatio: 0.8,
                   children: [
                     _buildDataCard(
                       context: context,

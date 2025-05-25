@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'dart:convert';
 import 'dart:async';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_database/firebase_database.dart'; // Firebase Realtime Database
 import 'package:appjardinerito/presentation/bluetooth_provider.dart';
 import 'package:appjardinerito/presentation/calendar_screen.dart';
 import 'package:appjardinerito/presentation/data_screen.dart';
@@ -35,12 +36,45 @@ class _SensorDataScreenState extends State<SensorDataScreen> {
   double _temperature = 0;
   double _ph = 0;
 
+  // Valores dinámicos obtenidos desde Firebase
+  double _minHumidity = 40;
+  double _minLight = 1000;
+  double _minTemperature = 18;
+  double _minPh = 5.5;
+  double _maxPh = 7.0;
+
   final _actions = ['Regada', 'Cambiada de lugar', 'Cambiado el pH', 'Podada'];
 
   @override
   void initState() {
     super.initState();
+    _loadFirebaseThresholds(); // 1️⃣ Carga los umbrales de Firebase
     _setupBluetooth();
+  }
+
+  Future<void> _loadFirebaseThresholds() async {
+    try {
+      final dbRef = FirebaseDatabase.instance.ref().child(
+        'plantas/${widget.plantId}/umbrales',
+      );
+
+      final snapshot = await dbRef.get();
+
+      if (snapshot.exists) {
+        final data = snapshot.value as Map<dynamic, dynamic>;
+        setState(() {
+          _minHumidity = (data['minHumidity'] ?? 40).toDouble();
+          _minLight = (data['minLight'] ?? 1000).toDouble();
+          _minTemperature = (data['minTemperature'] ?? 18).toDouble();
+          _minPh = (data['minPh'] ?? 5.5).toDouble();
+          _maxPh = (data['maxPh'] ?? 7.0).toDouble();
+        });
+      } else {
+        print('No se encontraron umbrales para ${widget.plantId}');
+      }
+    } catch (e) {
+      print('Error al cargar umbrales de Firebase: $e');
+    }
   }
 
   Future<void> _setupBluetooth() async {
@@ -96,7 +130,7 @@ class _SensorDataScreenState extends State<SensorDataScreen> {
         _ph = sensorData["ph"]?.toDouble() ?? 0;
         _isLoading = false;
         _statusMessage = "Medición completada";
-        _generateRecommendations();
+        _generateRecommendations(); // 2️⃣ Genera recomendaciones con los umbrales de Firebase
       });
     } catch (e) {
       setState(() => _statusMessage = "Error: Formato inválido");
@@ -106,12 +140,17 @@ class _SensorDataScreenState extends State<SensorDataScreen> {
   void _generateRecommendations() {
     final recommendations = <String>[];
 
-    if (_humidity < 40) recommendations.add("Agrega agua a la planta.");
-    if (_light < 1000)
+    if (_humidity < _minHumidity)
+      recommendations.add("Agrega agua a la planta.");
+
+    if (_light < _minLight)
       recommendations.add("Coloca la planta en un lugar más iluminado.");
-    if (_temperature < 18)
+
+    if (_temperature < _minTemperature)
       recommendations.add("Mantén la planta en un ambiente más cálido.");
-    if (_ph < 5.5 || _ph > 7) recommendations.add("Ajusta el pH del suelo.");
+
+    if (_ph < _minPh || _ph > _maxPh)
+      recommendations.add("Ajusta el pH del suelo.");
 
     setState(() => _recommendations = recommendations);
   }
@@ -368,7 +407,6 @@ class _SensorDataScreenState extends State<SensorDataScreen> {
               ),
             ),
           ),
-          // Nueva disposición de botones en la parte inferior
           Padding(
             padding: const EdgeInsets.symmetric(
               horizontal: 16.0,
