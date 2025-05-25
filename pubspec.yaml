@@ -82,6 +82,7 @@ flutter:
     - assets/ico.png
     - assets/blue_icon.png
     - assets/open_app.gif
+    - assets/images/
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 

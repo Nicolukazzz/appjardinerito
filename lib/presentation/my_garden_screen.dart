@@ -182,6 +182,9 @@ class MyGardenScreen extends StatelessWidget {
                     itemBuilder: (context, index) {
                       final plant = plants[index];
                       final plantName = plant.key;
+                      final plantData = plant.value as Map<dynamic, dynamic>;
+                      final imagePath =
+                          plantData['image'] ?? 'assets/images/default.jpg';
 
                       return GestureDetector(
                         onTap: () {
@@ -206,10 +209,11 @@ class MyGardenScreen extends StatelessWidget {
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(
-                                  Icons.local_florist,
-                                  size: 50,
-                                  color: primaryGreen,
+                                Image.asset(
+                                  imagePath,
+                                  width: 90,
+                                  height: 90,
+                                  fit: BoxFit.cover,
                                 ),
                                 SizedBox(height: 10),
                                 Text(

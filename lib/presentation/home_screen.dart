@@ -17,6 +17,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
   int _tutorialStep = 0;
   bool _showTutorial = false;
+  bool _showHelpMessage = true;
 
   final List<Widget> _screens = [
     MyGardenScreen(),
@@ -46,6 +47,20 @@ class _HomeScreenState extends State<HomeScreen> {
           'El botón de arriba a la derecha permite conectar con Alvarrito, para tomar los datos de tus plantas y recibir consejos personalizados.',
     },
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _startHelpMessageTimer();
+  }
+
+  void _startHelpMessageTimer() {
+    Future.delayed(Duration(seconds: 5), () {
+      setState(() {
+        _showHelpMessage = false;
+      });
+    });
+  }
 
   void _startTutorial() {
     setState(() {
@@ -159,7 +174,11 @@ class _HomeScreenState extends State<HomeScreen> {
           child: BottomNavigationBar(
             currentIndex: _currentIndex,
             onTap: (index) {
-              setState(() => _currentIndex = index);
+              setState(() {
+                _currentIndex = index;
+                _showHelpMessage = true; // Reiniciamos para mostrar mensaje
+              });
+              _startHelpMessageTimer(); // Iniciamos temporizador para ocultarlo
               if (_showTutorial) {
                 setState(() => _tutorialStep = index);
               }
@@ -205,23 +224,26 @@ class _HomeScreenState extends State<HomeScreen> {
       'Revisa las acciones que hiciste con tus plantas, como riego o cambio de lugar.',
     ];
 
-    return Positioned(
-      bottom: 10, // Ajustado para que esté encima de la barra de navegación
-      left: 20,
-      right: 20,
-      child: Material(
-        borderRadius: BorderRadius.circular(16),
-        elevation: 8,
-        color: isDarkMode ? Colors.grey[850] : Colors.green[50],
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Text(
-            messages[_currentIndex],
-            style: GoogleFonts.poppins(
-              fontSize: 15,
-              color: isDarkMode ? Colors.white : Colors.green[900],
+    return Visibility(
+      visible: _showHelpMessage,
+      child: Positioned(
+        bottom: 10,
+        left: 20,
+        right: 20,
+        child: Material(
+          borderRadius: BorderRadius.circular(16),
+          elevation: 8,
+          color: isDarkMode ? Colors.grey[850] : Colors.green[50],
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Text(
+              messages[_currentIndex],
+              style: GoogleFonts.poppins(
+                fontSize: 15,
+                color: isDarkMode ? Colors.white : Colors.green[900],
+              ),
+              textAlign: TextAlign.center,
             ),
-            textAlign: TextAlign.center,
           ),
         ),
       ),

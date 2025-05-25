@@ -27,6 +27,18 @@ class _AddPlantScreenState extends State<AddPlantScreen> {
     super.dispose();
   }
 
+  String normalizeName(String name) {
+    return name
+        .toLowerCase()
+        .replaceAll('á', 'a')
+        .replaceAll('é', 'e')
+        .replaceAll('í', 'i')
+        .replaceAll('ó', 'o')
+        .replaceAll('ú', 'u')
+        .replaceAll('ñ', 'n')
+        .replaceAll(' ', '_');
+  }
+
   void _addPlantToGarden(BuildContext context, String plantName) async {
     try {
       DatabaseEvent event =
@@ -223,6 +235,7 @@ class _AddPlantScreenState extends State<AddPlantScreen> {
                   itemBuilder: (context, index) {
                     final plant = plants[index];
                     final plantName = plant.key;
+                    final normalizedName = normalizeName(plantName);
 
                     return GestureDetector(
                       onTap: () => _addPlantToGarden(context, plantName),
@@ -240,7 +253,19 @@ class _AddPlantScreenState extends State<AddPlantScreen> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.eco, size: 50, color: Colors.green),
+                              Image.asset(
+                                'assets/images/$normalizedName.jpg', // o .png
+                                width: 50,
+                                height: 50,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Icon(
+                                    Icons.eco,
+                                    size: 50,
+                                    color: Colors.green,
+                                  );
+                                },
+                              ),
                               SizedBox(height: 10),
                               Text(
                                 plantName,
