@@ -13,25 +13,31 @@ class DataScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final isDarkMode = themeProvider.isDarkMode;
-    final primaryColor =
-        isDarkMode ? Colors.green[700] : const Color(0xFF487363);
+    final primaryColor = Color(0xFF29AB87); // Verde principal
+    final secondaryColor = Color(0xFFFFBF00); // Amarillo secundario
     final databaseRef = FirebaseDatabase.instance.ref();
 
     return Scaffold(
       appBar: AppBar(
         title: Text(
           "Datos de la Planta",
-          style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+          style: GoogleFonts.poppins(
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
         ),
         centerTitle: true,
         elevation: 0,
-        backgroundColor: isDarkMode ? Colors.grey[900] : Colors.green,
+        backgroundColor: isDarkMode ? Color(0xFF1A1A1A) : primaryColor,
         titleTextStyle: GoogleFonts.poppins(
           fontSize: 23,
           fontWeight: FontWeight.bold,
         ),
       ),
-      backgroundColor: isDarkMode ? Colors.black : Colors.white,
+      backgroundColor:
+          isDarkMode
+              ? Color(0xFF121212)
+              : Color(0xFFFFF2A6), // Fondo amarillo claro
       body: StreamBuilder<DatabaseEvent>(
         stream: databaseRef.child('plantas10/$plantId').onValue,
         builder: (context, snapshot) {
@@ -77,7 +83,7 @@ class DataScreen extends StatelessWidget {
                     style: GoogleFonts.poppins(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: isDarkMode ? Colors.white : primaryColor,
+                      color: isDarkMode ? secondaryColor : primaryColor,
                     ),
                   ),
                 ),
@@ -127,7 +133,7 @@ class DataScreen extends StatelessWidget {
                       min: plantData['luz']['min'].toString(),
                       max: plantData['luz']['max'].toString(),
                       icon: Icons.light_mode,
-                      color: Colors.amber[700]!,
+                      color: secondaryColor,
                       isDarkMode: isDarkMode,
                     ),
                     _buildDataCard(
@@ -170,7 +176,7 @@ class DataScreen extends StatelessWidget {
                       _buildFeatureChip(
                         label: 'Medicinal',
                         icon: Icons.medical_services,
-                        color: Colors.green,
+                        color: primaryColor,
                         isDarkMode: isDarkMode,
                       ),
                     if (plantData['ornamental'] == 'Si')
@@ -198,7 +204,7 @@ class DataScreen extends StatelessWidget {
                       _buildFeatureChip(
                         label: 'No tóxica',
                         icon: Icons.check_circle,
-                        color: Colors.green,
+                        color: primaryColor,
                         isDarkMode: isDarkMode,
                       ),
                     if (plantData['colgante'] == 'Si')
@@ -255,7 +261,7 @@ class DataScreen extends StatelessWidget {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(15),
                   ),
-                  color: isDarkMode ? Colors.grey[800] : Colors.white,
+                  color: isDarkMode ? Color(0xFF1A1A1A) : Colors.white,
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
@@ -310,7 +316,7 @@ class DataScreen extends StatelessWidget {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(15),
                   ),
-                  color: isDarkMode ? Colors.grey[800] : Colors.white,
+                  color: isDarkMode ? Color(0xFF1A1A1A) : Colors.white,
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
@@ -334,8 +340,7 @@ class DataScreen extends StatelessWidget {
                           context: context,
                           label: 'Cantidad',
                           value: plantData['riego']['cantidad'],
-                          icon:
-                              Icons.water, // Icono cambiado a uno más adecuado
+                          icon: Icons.water,
                           isDarkMode: isDarkMode,
                         ),
                       ],
@@ -359,7 +364,7 @@ class DataScreen extends StatelessWidget {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(15),
                   ),
-                  color: isDarkMode ? Colors.grey[800] : Colors.white,
+                  color: isDarkMode ? Color(0xFF1A1A1A) : Colors.white,
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
@@ -491,7 +496,7 @@ class DataScreen extends StatelessWidget {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(15),
                         ),
-                        color: isDarkMode ? Colors.grey[800] : Colors.white,
+                        color: isDarkMode ? Color(0xFF1A1A1A) : Colors.white,
                         child: Padding(
                           padding: const EdgeInsets.all(16.0),
                           child: Column(
@@ -546,7 +551,7 @@ class DataScreen extends StatelessWidget {
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      color: isDarkMode ? Colors.grey[800] : Colors.white,
+      color: isDarkMode ? Color(0xFF1A1A1A) : Colors.white,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -727,7 +732,7 @@ class DataScreen extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, size: 24, color: Colors.green),
+          Icon(icon, size: 24, color: Color(0xFF29AB87)),
           const SizedBox(width: 10),
           Expanded(
             child: Column(

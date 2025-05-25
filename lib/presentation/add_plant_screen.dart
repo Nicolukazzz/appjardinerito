@@ -61,6 +61,7 @@ class _AddPlantScreenState extends State<AddPlantScreen> {
               "Planta agregada a Mi Jardín: $plantName",
               style: GoogleFonts.poppins(),
             ),
+            backgroundColor: Color(0xFF29AB87), // Verde
             duration: Duration(seconds: 2),
           ),
         );
@@ -71,6 +72,7 @@ class _AddPlantScreenState extends State<AddPlantScreen> {
               "Error: No se encontró la planta",
               style: GoogleFonts.poppins(),
             ),
+            backgroundColor: Colors.red,
           ),
         );
       }
@@ -81,6 +83,7 @@ class _AddPlantScreenState extends State<AddPlantScreen> {
             "Error al agregar la planta",
             style: GoogleFonts.poppins(),
           ),
+          backgroundColor: Colors.red,
         ),
       );
     }
@@ -100,7 +103,10 @@ class _AddPlantScreenState extends State<AddPlantScreen> {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
-        color: isDarkMode ? Colors.grey[800] : Colors.grey[100],
+        color:
+            isDarkMode
+                ? Color(0xFF1A1A1A)
+                : Color(0xFFFFF2A6), // Amarillo claro en modo claro
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
@@ -120,14 +126,17 @@ class _AddPlantScreenState extends State<AddPlantScreen> {
         },
         style: GoogleFonts.poppins(
           fontSize: 16,
-          color: isDarkMode ? Colors.white : Colors.black,
+          color:
+              isDarkMode
+                  ? Color(0xFFFFBF00)
+                  : Colors.black, // Amarillo en modo oscuro
         ),
         decoration: InputDecoration(
           hintText: 'Buscar plantas...',
           hintStyle: GoogleFonts.poppins(
             color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
           ),
-          prefixIcon: Icon(Icons.search, color: Colors.green),
+          prefixIcon: Icon(Icons.search, color: Color(0xFF29AB87)), // Verde
           suffixIcon:
               _searchQuery.isNotEmpty
                   ? IconButton(
@@ -150,21 +159,30 @@ class _AddPlantScreenState extends State<AddPlantScreen> {
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDarkMode = themeProvider.isDarkMode;
 
     return Scaffold(
-      backgroundColor: themeProvider.isDarkMode ? Colors.black : Colors.white,
+      backgroundColor:
+          isDarkMode
+              ? Color(0xFF121212)
+              : Color(0xFFFFF2A6), // Fondo amarillo claro
       appBar: AppBar(
         title: Text(
           _showConfirmation ? "" : "Selecciona una planta",
           style: GoogleFonts.poppins(
             fontWeight: FontWeight.bold,
-            color: Colors.green,
+            color:
+                isDarkMode
+                    ? Color(0xFFFFBF00)
+                    : Colors.white, // Amarillo en oscuro, blanco en claro
           ),
         ),
         centerTitle: true,
         elevation: 0,
         backgroundColor:
-            themeProvider.isDarkMode ? Colors.grey[900] : Colors.white,
+            isDarkMode
+                ? Color(0xFF1A1A1A)
+                : Color(0xFF29AB87), // Verde en claro
         titleTextStyle: GoogleFonts.poppins(
           fontSize: 23,
           fontWeight: FontWeight.bold,
@@ -189,6 +207,8 @@ class _AddPlantScreenState extends State<AddPlantScreen> {
 
   Widget _buildPlantSelectionScreen(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDarkMode = themeProvider.isDarkMode;
+    final primaryColor = Color(0xFF29AB87); // Verde principal
 
     return Padding(
       padding: const EdgeInsets.all(16.0),
@@ -200,22 +220,44 @@ class _AddPlantScreenState extends State<AddPlantScreen> {
               stream: _databaseRef.child('plantas10').onValue,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
+                  return Center(
+                    child: CircularProgressIndicator(color: primaryColor),
+                  );
                 }
                 if (snapshot.hasError) {
                   return Center(
                     child: Text(
                       "Error al cargar las plantas",
-                      style: GoogleFonts.poppins(),
+                      style: GoogleFonts.poppins(
+                        fontSize: 18,
+                        color: isDarkMode ? Colors.white : Colors.black,
+                      ),
                     ),
                   );
                 }
                 if (!snapshot.hasData ||
                     snapshot.data!.snapshot.value == null) {
                   return Center(
-                    child: Text(
-                      "No hay plantas disponibles",
-                      style: GoogleFonts.poppins(),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.local_florist,
+                          size: 50,
+                          color:
+                              isDarkMode
+                                  ? Color(0xFFFFBF00)
+                                  : primaryColor, // Amarillo en oscuro, verde en claro
+                        ),
+                        SizedBox(height: 16),
+                        Text(
+                          "No hay plantas disponibles",
+                          style: GoogleFonts.poppins(
+                            fontSize: 18,
+                            color: isDarkMode ? Colors.white : Colors.black,
+                          ),
+                        ),
+                      ],
                     ),
                   );
                 }
@@ -227,9 +269,9 @@ class _AddPlantScreenState extends State<AddPlantScreen> {
                 return GridView.builder(
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
-                    crossAxisSpacing: 20,
-                    mainAxisSpacing: 20,
-                    childAspectRatio: 0.9,
+                    crossAxisSpacing: 16,
+                    mainAxisSpacing: 16,
+                    childAspectRatio: 0.85,
                   ),
                   itemCount: plants.length,
                   itemBuilder: (context, index) {
@@ -244,40 +286,43 @@ class _AddPlantScreenState extends State<AddPlantScreen> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(15),
                         ),
-                        color:
-                            themeProvider.isDarkMode
-                                ? Colors.grey[900]
-                                : Colors.white,
-                        child: Container(
-                          padding: const EdgeInsets.all(16.0),
+                        color: isDarkMode ? Color(0xFF1A1A1A) : Colors.white,
+                        child: Padding(
+                          padding: const EdgeInsets.all(10.0),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Image.asset(
-                                'assets/images/$normalizedName.jpg', // o .png
-                                width: 50,
-                                height: 50,
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return Icon(
-                                    Icons.eco,
-                                    size: 50,
-                                    color: Colors.green,
-                                  );
-                                },
-                              ),
-                              SizedBox(height: 10),
-                              Text(
-                                plantName,
-                                style: GoogleFonts.poppins(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color:
-                                      themeProvider.isDarkMode
-                                          ? Colors.white
-                                          : Colors.green,
+                              Container(
+                                height: 100,
+                                padding: const EdgeInsets.all(4),
+                                child: Image.asset(
+                                  'assets/images/$normalizedName.jpg',
+                                  fit: BoxFit.contain,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Icon(
+                                      Icons.eco,
+                                      size: 50,
+                                      color: primaryColor,
+                                    );
+                                  },
                                 ),
-                                textAlign: TextAlign.center,
+                              ),
+                              SizedBox(height: 8),
+                              Flexible(
+                                child: Text(
+                                  plantName,
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color:
+                                        isDarkMode
+                                            ? Color(0xFFFFBF00)
+                                            : primaryColor, // Amarillo en oscuro, verde en claro
+                                  ),
+                                  textAlign: TextAlign.center,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
                             ],
                           ),
@@ -295,17 +340,24 @@ class _AddPlantScreenState extends State<AddPlantScreen> {
   }
 
   Widget _buildConfirmationScreen(BuildContext context) {
+    final isDarkMode = Provider.of<ThemeProvider>(context).isDarkMode;
+
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.check_circle, size: 100, color: Colors.green),
+          Icon(
+            Icons.check_circle,
+            size: 100,
+            color: Color(0xFF29AB87), // Verde
+          ),
           SizedBox(height: 23),
           Text(
             "Planta $_selectedPlantName agregada con éxito",
             style: GoogleFonts.poppins(
               fontSize: 22,
               fontWeight: FontWeight.bold,
+              color: isDarkMode ? Colors.white : Colors.black,
             ),
             textAlign: TextAlign.center,
           ),
@@ -315,10 +367,10 @@ class _AddPlantScreenState extends State<AddPlantScreen> {
             width: 120,
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor:
-                    Provider.of<ThemeProvider>(context).isDarkMode
-                        ? Colors.green[700]
-                        : Colors.grey[900],
+                backgroundColor: Color(0xFF29AB87), // Verde
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
               onPressed: _resetSelection,
               child: Text(

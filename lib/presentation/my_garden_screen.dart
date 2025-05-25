@@ -18,21 +18,27 @@ class MyGardenScreen extends StatelessWidget {
         return AlertDialog(
           backgroundColor:
               Provider.of<ThemeProvider>(context).isDarkMode
-                  ? Colors.grey[900]
-                  : Colors.white,
+                  ? Color(0xFF1A1A1A) // Fondo oscuro en modo oscuro
+                  : Color(0xFFFFF2A6), // Fondo amarillo claro en modo claro
           title: Text(
             "Eliminar planta",
             style: GoogleFonts.poppins(
               fontWeight: FontWeight.bold,
               color:
                   Provider.of<ThemeProvider>(context).isDarkMode
-                      ? Colors.white
-                      : Colors.black,
+                      ? Color(0xFFFFBF00) // Amarillo en modo oscuro
+                      : Color(0xFF29AB87), // Verde en modo claro
             ),
           ),
           content: Text(
             "¿Estás seguro de eliminar $plantName de tu jardín?",
-            style: GoogleFonts.poppins(fontSize: 17),
+            style: GoogleFonts.poppins(
+              fontSize: 17,
+              color:
+                  Provider.of<ThemeProvider>(context).isDarkMode
+                      ? Colors.white
+                      : Colors.black,
+            ),
           ),
           actions: [
             TextButton(
@@ -60,7 +66,7 @@ class MyGardenScreen extends StatelessWidget {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          backgroundColor: Colors.green,
+                          backgroundColor: Color(0xFF29AB87), // Verde
                         ),
                       );
                     })
@@ -98,7 +104,8 @@ class MyGardenScreen extends StatelessWidget {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final isDarkMode = themeProvider.isDarkMode;
     final bluetoothProvider = Provider.of<BluetoothProvider>(context);
-    final primaryGreen = Colors.green;
+    final primaryColor = Color(0xFF29AB87); // Verde principal
+    final secondaryColor = Color(0xFFFFBF00); // Amarillo secundario
 
     return Scaffold(
       appBar: AppBar(
@@ -106,18 +113,27 @@ class MyGardenScreen extends StatelessWidget {
           "Mi Jardín",
           style: GoogleFonts.poppins(
             fontWeight: FontWeight.bold,
-            color: Colors.green,
+            color:
+                isDarkMode
+                    ? Color(0xFFFFBF00)
+                    : Colors.white, // Amarillo en oscuro, blanco en claro
           ),
         ),
         centerTitle: true,
         elevation: 0,
-        backgroundColor: isDarkMode ? Colors.grey[900] : Colors.white,
+        backgroundColor:
+            isDarkMode
+                ? Color(0xFF1A1A1A)
+                : Color(0xFF29AB87), // Verde en claro
         titleTextStyle: GoogleFonts.poppins(
           fontSize: 23,
           fontWeight: FontWeight.bold,
         ),
       ),
-      backgroundColor: isDarkMode ? Colors.black : Colors.white,
+      backgroundColor:
+          isDarkMode
+              ? Color(0xFF121212)
+              : Color(0xFFFFF2A6), // Fondo amarillo claro
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -129,7 +145,7 @@ class MyGardenScreen extends StatelessWidget {
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return Center(
-                      child: CircularProgressIndicator(color: primaryGreen),
+                      child: CircularProgressIndicator(color: primaryColor),
                     );
                   }
                   if (snapshot.hasError) {
@@ -152,7 +168,10 @@ class MyGardenScreen extends StatelessWidget {
                           Icon(
                             Icons.local_florist,
                             size: 50,
-                            color: Colors.grey[900],
+                            color:
+                                isDarkMode
+                                    ? Color(0xFFFFBF00)
+                                    : Color(0xFF29AB87),
                           ),
                           SizedBox(height: 16),
                           Text(
@@ -174,9 +193,9 @@ class MyGardenScreen extends StatelessWidget {
                   return GridView.builder(
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
-                      crossAxisSpacing: 20,
-                      mainAxisSpacing: 20,
-                      childAspectRatio: 0.9,
+                      crossAxisSpacing: 16,
+                      mainAxisSpacing: 16,
+                      childAspectRatio: 0.8,
                     ),
                     itemCount: plants.length,
                     itemBuilder: (context, index) {
@@ -203,27 +222,35 @@ class MyGardenScreen extends StatelessWidget {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(15),
                           ),
-                          color: isDarkMode ? Colors.grey[900] : Colors.white,
-                          child: Container(
-                            padding: const EdgeInsets.all(16.0),
+                          color: isDarkMode ? Color(0xFF1A1A1A) : Colors.white,
+                          child: Padding(
+                            padding: const EdgeInsets.all(10.0),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Image.asset(
-                                  imagePath,
-                                  width: 90,
-                                  height: 90,
-                                  fit: BoxFit.cover,
-                                ),
-                                SizedBox(height: 10),
-                                Text(
-                                  plantName,
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                    color: primaryGreen,
+                                Container(
+                                  height: 100,
+                                  margin: const EdgeInsets.only(bottom: 8),
+                                  child: Image.asset(
+                                    imagePath,
+                                    fit: BoxFit.contain,
                                   ),
-                                  textAlign: TextAlign.center,
+                                ),
+                                Flexible(
+                                  child: Text(
+                                    plantName,
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color:
+                                          isDarkMode
+                                              ? Color(0xFFFFBF00)
+                                              : Color(0xFF29AB87),
+                                    ),
+                                    textAlign: TextAlign.center,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
                                 ),
                               ],
                             ),

@@ -1,4 +1,3 @@
-// Tu import actual
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -99,12 +98,14 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final isDarkMode = themeProvider.isDarkMode;
-    final primaryColor = isDarkMode ? Colors.grey[900] : Colors.green;
+    final primaryColor = isDarkMode ? Color(0xFF1A1A1A) : Color(0xFF29AB87);
+    final secondaryColor = isDarkMode ? Color(0xFFDAA520) : Color(0xFFFFBF00);
+    final backgroundColor = isDarkMode ? Color(0xFF121212) : Color(0xFFFFF2A6);
 
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          _showTutorial ? "Tutorial" : "Mi Jardín",
+          _showTutorial ? "Tutorial" : "My Garden",
           style: GoogleFonts.poppins(
             fontWeight: FontWeight.bold,
             fontSize: 23,
@@ -123,7 +124,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 : IconButton(
                   icon: Icon(
                     isDarkMode ? Icons.light_mode : Icons.dark_mode,
-                    color: isDarkMode ? Colors.yellow : Colors.white,
+                    color: isDarkMode ? Color(0xFFFFBF00) : Colors.white,
                   ),
                   onPressed: () {
                     themeProvider.toggleTheme();
@@ -147,7 +148,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
         ],
       ),
-      backgroundColor: isDarkMode ? Colors.black : Colors.white,
+      backgroundColor: backgroundColor,
       body: Stack(
         children: [
           IndexedStack(index: _currentIndex, children: _screens),
@@ -156,60 +157,64 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       bottomNavigationBar: Container(
-        margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(30),
-          color: isDarkMode ? Colors.grey[800] : Colors.green[600],
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.2),
-              blurRadius: 10,
-              spreadRadius: 2,
-              offset: Offset(0, 3),
-            ),
-          ],
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(30),
-          child: BottomNavigationBar(
-            currentIndex: _currentIndex,
-            onTap: (index) {
-              setState(() {
-                _currentIndex = index;
-                _showHelpMessage = true; // Reiniciamos para mostrar mensaje
-              });
-              _startHelpMessageTimer(); // Iniciamos temporizador para ocultarlo
-              if (_showTutorial) {
-                setState(() => _tutorialStep = index);
-              }
-            },
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            selectedItemColor: Colors.white,
-            unselectedItemColor:
-                isDarkMode ? Colors.grey[400] : Colors.green[100],
-            type: BottomNavigationBarType.fixed,
-            items: [
-              BottomNavigationBarItem(
-                icon: Icon(Icons.eco, size: 24),
-                label: 'Mi Jardín',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.add_circle_outline, size: 24),
-                label: 'Agregar',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.calendar_today, size: 24),
-                label: 'Calendario',
+        color: Color(0xFFFFF2A6), // Fondo amarillo alrededor de la caja
+        padding: EdgeInsets.symmetric(vertical: 10),
+        child: Container(
+          margin: EdgeInsets.symmetric(horizontal: 20),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(30),
+            color: primaryColor, // Verde del AppBar (#29AB87)
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.2),
+                blurRadius: 10,
+                spreadRadius: 2,
+                offset: Offset(0, 3),
               ),
             ],
-            selectedLabelStyle: GoogleFonts.poppins(
-              fontWeight: FontWeight.w600,
-              fontSize: 12,
-            ),
-            unselectedLabelStyle: GoogleFonts.poppins(
-              fontWeight: FontWeight.w500,
-              fontSize: 11,
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(30),
+            child: BottomNavigationBar(
+              currentIndex: _currentIndex,
+              onTap: (index) {
+                setState(() {
+                  _currentIndex = index;
+                  _showHelpMessage = true;
+                });
+                _startHelpMessageTimer();
+                if (_showTutorial) {
+                  setState(() => _tutorialStep = index);
+                }
+              },
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              selectedItemColor: Colors.white,
+              unselectedItemColor:
+                  isDarkMode ? Colors.grey[400] : Colors.white.withOpacity(0.7),
+              type: BottomNavigationBarType.fixed,
+              items: [
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.eco, size: 24),
+                  label: 'Mi Jardín',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.add_circle_outline, size: 24),
+                  label: 'Agregar',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.calendar_today, size: 24),
+                  label: 'Calendario',
+                ),
+              ],
+              selectedLabelStyle: GoogleFonts.poppins(
+                fontWeight: FontWeight.w600,
+                fontSize: 12,
+              ),
+              unselectedLabelStyle: GoogleFonts.poppins(
+                fontWeight: FontWeight.w500,
+                fontSize: 11,
+              ),
             ),
           ),
         ),
@@ -227,20 +232,20 @@ class _HomeScreenState extends State<HomeScreen> {
     return Visibility(
       visible: _showHelpMessage,
       child: Positioned(
-        bottom: 10,
+        bottom: 10, // Ajustado para que no se solape con el BottomNavigationBar
         left: 20,
         right: 20,
         child: Material(
           borderRadius: BorderRadius.circular(16),
           elevation: 8,
-          color: isDarkMode ? Colors.grey[850] : Colors.green[50],
+          color: isDarkMode ? Color(0xFF1A1A1A) : Color(0xFFE8F5E9),
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Text(
               messages[_currentIndex],
               style: GoogleFonts.poppins(
                 fontSize: 15,
-                color: isDarkMode ? Colors.white : Colors.green[900],
+                color: isDarkMode ? Colors.white : Color(0xFF29AB87),
               ),
               textAlign: TextAlign.center,
             ),
@@ -267,7 +272,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Material(
               elevation: 12,
               borderRadius: BorderRadius.circular(24),
-              color: isDarkMode ? Colors.grey[900] : Colors.white,
+              color: isDarkMode ? Color(0xFF1A1A1A) : Colors.white,
               child: Padding(
                 padding: const EdgeInsets.all(24.0),
                 child: Column(
@@ -280,7 +285,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       style: GoogleFonts.poppins(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
-                        color: isDarkMode ? Colors.white : Colors.green[800],
+                        color:
+                            isDarkMode ? Color(0xFFFFBF00) : Color(0xFF29AB87),
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -314,7 +320,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 child: Text(
                                   'Anterior',
                                   style: GoogleFonts.poppins(
-                                    color: Colors.green,
+                                    color: Color(0xFF29AB87),
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -323,7 +329,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ElevatedButton(
                               onPressed: _nextTutorialStep,
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.green,
+                                backgroundColor: Color(0xFF29AB87),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),

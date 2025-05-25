@@ -56,7 +56,12 @@ class _CalendarScreenState extends State<CalendarScreen> {
           padding: EdgeInsets.symmetric(vertical: 20),
           child: Text(
             "No hay acciones registradas para este día",
-            style: GoogleFonts.poppins(color: Colors.grey),
+            style: GoogleFonts.poppins(
+              color:
+                  Provider.of<ThemeProvider>(context).isDarkMode
+                      ? Color(0xFFFFBF00) // Amarillo en modo oscuro
+                      : Colors.grey,
+            ),
           ),
         ),
       ];
@@ -67,22 +72,48 @@ class _CalendarScreenState extends State<CalendarScreen> {
         padding: EdgeInsets.only(top: 20, bottom: 10),
         child: Text(
           "Acciones registradas:",
-          style: GoogleFonts.poppins(fontWeight: FontWeight.bold, fontSize: 16),
+          style: GoogleFonts.poppins(
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+            color:
+                Provider.of<ThemeProvider>(context).isDarkMode
+                    ? Colors.white
+                    : Color(0xFF29AB87), // Verde en modo claro
+          ),
         ),
       ),
       ...(actions as List).map((entry) {
         return Card(
           margin: EdgeInsets.symmetric(vertical: 5),
           elevation: 2,
+          color:
+              Provider.of<ThemeProvider>(context).isDarkMode
+                  ? Color(0xFF1A1A1A) // Gris oscuro en modo oscuro
+                  : Colors.white,
           child: ListTile(
-            leading: Icon(Icons.local_florist, color: Colors.green),
+            leading: Icon(
+              Icons.local_florist,
+              color: Color(0xFF29AB87), // Verde
+            ),
             title: Text(
               '${entry['planta']} - ${entry['accion']}',
-              style: GoogleFonts.poppins(fontWeight: FontWeight.w500),
+              style: GoogleFonts.poppins(
+                fontWeight: FontWeight.w500,
+                color:
+                    Provider.of<ThemeProvider>(context).isDarkMode
+                        ? Colors.white
+                        : Colors.black,
+              ),
             ),
             subtitle: Text(
-              'Hora: ${entry['fecha']}', // Muestra solo hora:minutos
-              style: GoogleFonts.poppins(fontSize: 12),
+              'Hora: ${entry['fecha']}',
+              style: GoogleFonts.poppins(
+                fontSize: 12,
+                color:
+                    Provider.of<ThemeProvider>(context).isDarkMode
+                        ? Color(0xFFFFBF00) // Amarillo en modo oscuro
+                        : Colors.grey[600],
+              ),
             ),
           ),
         );
@@ -94,6 +125,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final isDark = themeProvider.isDarkMode;
+    final primaryColor = Color(0xFF29AB87); // Verde principal
+    final secondaryColor = Color(0xFFFFBF00); // Amarillo secundario
 
     return Scaffold(
       appBar: AppBar(
@@ -101,21 +134,33 @@ class _CalendarScreenState extends State<CalendarScreen> {
           "Historial de Cuidados",
           style: GoogleFonts.poppins(
             fontWeight: FontWeight.bold,
-            color: Colors.green,
+            color:
+                isDark
+                    ? secondaryColor
+                    : Colors.white, // Amarillo en oscuro, blanco en claro
           ),
         ),
         centerTitle: true,
-        backgroundColor: isDark ? Colors.grey[900] : Colors.white,
+        backgroundColor:
+            isDark
+                ? Color(0xFF1A1A1A)
+                : primaryColor, // Gris oscuro en modo oscuro, verde en claro
         elevation: 0,
         actions: [
           IconButton(
-            icon: Icon(Icons.refresh),
+            icon: Icon(
+              Icons.refresh,
+              color: isDark ? secondaryColor : Colors.white,
+            ),
             onPressed: _loadSavedActions,
             tooltip: 'Actualizar',
           ),
         ],
       ),
-      backgroundColor: isDark ? Colors.black : Colors.white,
+      backgroundColor:
+          isDark
+              ? Color(0xFF121212)
+              : Color(0xFFFFF2A6), // Fondo amarillo claro en modo claro
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -127,6 +172,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
+                color: isDark ? Color(0xFF1A1A1A) : Colors.white,
                 child: Padding(
                   padding: EdgeInsets.all(8),
                   child: TableCalendar(
@@ -148,18 +194,26 @@ class _CalendarScreenState extends State<CalendarScreen> {
                     eventLoader: _getEventsForDay,
                     calendarStyle: CalendarStyle(
                       selectedDecoration: BoxDecoration(
-                        color: Colors.green,
+                        color: primaryColor, // Verde
                         shape: BoxShape.circle,
                       ),
                       todayDecoration: BoxDecoration(
-                        color: Colors.green.withOpacity(0.5),
+                        color: primaryColor.withOpacity(
+                          0.5,
+                        ), // Verde con opacidad
                         shape: BoxShape.circle,
                       ),
-                      weekendTextStyle: TextStyle(
+                      defaultTextStyle: GoogleFonts.poppins(
                         color: isDark ? Colors.white : Colors.black,
                       ),
+                      weekendTextStyle: GoogleFonts.poppins(
+                        color:
+                            isDark
+                                ? secondaryColor
+                                : primaryColor, // Amarillo en oscuro, verde en claro
+                      ),
                       markerDecoration: BoxDecoration(
-                        color: Colors.green,
+                        color: primaryColor, // Verde
                         shape: BoxShape.circle,
                       ),
                       markerSize: 6,
@@ -172,19 +226,33 @@ class _CalendarScreenState extends State<CalendarScreen> {
                       titleTextStyle: GoogleFonts.poppins(
                         fontWeight: FontWeight.w600,
                         fontSize: 16,
+                        color: isDark ? Colors.white : Colors.black,
                       ),
                       leftChevronIcon: Icon(
                         Icons.chevron_left,
-                        color: Colors.green,
+                        color:
+                            isDark
+                                ? secondaryColor
+                                : primaryColor, // Amarillo en oscuro, verde en claro
                       ),
                       rightChevronIcon: Icon(
                         Icons.chevron_right,
-                        color: Colors.green,
+                        color:
+                            isDark
+                                ? secondaryColor
+                                : primaryColor, // Amarillo en oscuro, verde en claro
                       ),
                     ),
                     daysOfWeekStyle: DaysOfWeekStyle(
-                      weekdayStyle: GoogleFonts.poppins(),
-                      weekendStyle: GoogleFonts.poppins(color: Colors.green),
+                      weekdayStyle: GoogleFonts.poppins(
+                        color: isDark ? Colors.white : Colors.black,
+                      ),
+                      weekendStyle: GoogleFonts.poppins(
+                        color:
+                            isDark
+                                ? secondaryColor
+                                : primaryColor, // Amarillo en oscuro, verde en claro
+                      ),
                     ),
                   ),
                 ),

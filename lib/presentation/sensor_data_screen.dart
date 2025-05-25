@@ -6,7 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'dart:convert';
 import 'dart:async';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:firebase_database/firebase_database.dart'; // Firebase Realtime Database
+import 'package:firebase_database/firebase_database.dart';
 import 'package:appjardinerito/presentation/bluetooth_provider.dart';
 import 'package:appjardinerito/presentation/calendar_screen.dart';
 import 'package:appjardinerito/presentation/data_screen.dart';
@@ -48,7 +48,7 @@ class _SensorDataScreenState extends State<SensorDataScreen> {
   @override
   void initState() {
     super.initState();
-    _loadFirebaseThresholds(); // 1️⃣ Carga los umbrales de Firebase
+    _loadFirebaseThresholds();
     _setupBluetooth();
   }
 
@@ -130,7 +130,7 @@ class _SensorDataScreenState extends State<SensorDataScreen> {
         _ph = sensorData["ph"]?.toDouble() ?? 0;
         _isLoading = false;
         _statusMessage = "Medición completada";
-        _generateRecommendations(); // 2️⃣ Genera recomendaciones con los umbrales de Firebase
+        _generateRecommendations();
       });
     } catch (e) {
       setState(() => _statusMessage = "Error: Formato inválido");
@@ -207,7 +207,7 @@ class _SensorDataScreenState extends State<SensorDataScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text("Acción registrada: $_selectedAction"),
-          backgroundColor: Colors.green,
+          backgroundColor: Color(0xFF29AB87), // Verde
         ),
       );
     } catch (e) {
@@ -221,11 +221,20 @@ class _SensorDataScreenState extends State<SensorDataScreen> {
   }
 
   void _showActionDialog() {
+    final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+    final isDarkMode = themeProvider.isDarkMode;
+
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text("Registrar Acción", style: GoogleFonts.poppins()),
+          backgroundColor: isDarkMode ? Color(0xFF1A1A1A) : Color(0xFFFFF2A6),
+          title: Text(
+            "Registrar Acción",
+            style: GoogleFonts.poppins(
+              color: isDarkMode ? Color(0xFFFFBF00) : Color(0xFF29AB87),
+            ),
+          ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -236,7 +245,12 @@ class _SensorDataScreenState extends State<SensorDataScreen> {
                         .map(
                           (action) => DropdownMenuItem(
                             value: action,
-                            child: Text(action, style: GoogleFonts.poppins()),
+                            child: Text(
+                              action,
+                              style: GoogleFonts.poppins(
+                                color: isDarkMode ? Colors.white : Colors.black,
+                              ),
+                            ),
                           ),
                         )
                         .toList(),
@@ -245,29 +259,41 @@ class _SensorDataScreenState extends State<SensorDataScreen> {
                 },
                 decoration: InputDecoration(
                   labelText: 'Acción realizada',
-                  labelStyle: GoogleFonts.poppins(),
+                  labelStyle: GoogleFonts.poppins(
+                    color: isDarkMode ? Color(0xFFFFBF00) : Color(0xFF29AB87),
+                  ),
                   border: OutlineInputBorder(),
                 ),
               ),
               SizedBox(height: 20),
               Text(
                 "¿Deseas registrar esta acción para ${widget.plantId}?",
-                style: GoogleFonts.poppins(),
+                style: GoogleFonts.poppins(
+                  color: isDarkMode ? Colors.white : Colors.black,
+                ),
               ),
             ],
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text("Cancelar", style: GoogleFonts.poppins()),
+              child: Text(
+                "Cancelar",
+                style: GoogleFonts.poppins(color: Colors.grey),
+              ),
             ),
             ElevatedButton(
               onPressed: () {
                 _registerAction();
                 Navigator.pop(context);
               },
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-              child: Text("Registrar", style: GoogleFonts.poppins()),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFF29AB87), // Verde
+              ),
+              child: Text(
+                "Registrar",
+                style: GoogleFonts.poppins(color: Colors.white),
+              ),
             ),
           ],
         );
@@ -288,7 +314,8 @@ class _SensorDataScreenState extends State<SensorDataScreen> {
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final isDarkMode = themeProvider.isDarkMode;
-    final primaryColor = isDarkMode ? Colors.green[700] : Color(0xFF487363);
+    final primaryColor = Color(0xFF29AB87); // Verde principal
+    final secondaryColor = Color(0xFFFFBF00); // Amarillo secundario
 
     return Scaffold(
       appBar: AppBar(
@@ -302,22 +329,22 @@ class _SensorDataScreenState extends State<SensorDataScreen> {
         ),
         centerTitle: true,
         elevation: 0,
-        backgroundColor: isDarkMode ? Colors.grey[900] : Colors.green,
+        backgroundColor: isDarkMode ? Color(0xFF1A1A1A) : primaryColor,
         actions: [
           IconButton(
-            icon: Icon(Icons.calendar_today),
+            icon: Icon(Icons.calendar_today, color: Colors.white),
             onPressed: _showActionDialog,
             tooltip: 'Registrar acción',
           ),
         ],
       ),
-      backgroundColor: isDarkMode ? Colors.black : Colors.white,
+      backgroundColor: isDarkMode ? Color(0xFF121212) : Color(0xFFFFF2A6),
       body: Column(
         children: [
           Container(
             width: double.infinity,
             padding: EdgeInsets.all(16),
-            color: Colors.green,
+            color: primaryColor,
             child: Text(
               _statusMessage,
               textAlign: TextAlign.center,
@@ -339,7 +366,7 @@ class _SensorDataScreenState extends State<SensorDataScreen> {
                     style: GoogleFonts.poppins(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: isDarkMode ? Colors.white : primaryColor,
+                      color: isDarkMode ? secondaryColor : primaryColor,
                     ),
                   ),
                   SizedBox(height: 20),
@@ -363,7 +390,7 @@ class _SensorDataScreenState extends State<SensorDataScreen> {
                           title: "Luz",
                           value: "${_light.toStringAsFixed(0)} lux",
                           icon: Icons.light_mode,
-                          color: Colors.amber[700]!,
+                          color: secondaryColor,
                           isDarkMode: isDarkMode,
                         ),
                         _buildDataCard(
@@ -397,8 +424,13 @@ class _SensorDataScreenState extends State<SensorDataScreen> {
                     ),
                     ..._recommendations.map(
                       (rec) => ListTile(
-                        leading: Icon(Icons.info, color: Colors.green),
-                        title: Text(rec, style: GoogleFonts.poppins()),
+                        leading: Icon(Icons.info, color: primaryColor),
+                        title: Text(
+                          rec,
+                          style: GoogleFonts.poppins(
+                            color: isDarkMode ? Colors.white : Colors.black,
+                          ),
+                        ),
                       ),
                     ),
                   ],
@@ -445,7 +477,7 @@ class _SensorDataScreenState extends State<SensorDataScreen> {
                   child: ElevatedButton(
                     onPressed: _isLoading ? null : _takeMeasurements,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green[800],
+                      backgroundColor: secondaryColor,
                       padding: EdgeInsets.symmetric(vertical: 15),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -496,7 +528,7 @@ class _SensorDataScreenState extends State<SensorDataScreen> {
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      color: isDarkMode ? Colors.grey[800] : Colors.white,
+      color: isDarkMode ? Color(0xFF1A1A1A) : Colors.white,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
