@@ -103,10 +103,7 @@ class _AddPlantScreenState extends State<AddPlantScreen> {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
-        color:
-            isDarkMode
-                ? Color(0xFF1A1A1A)
-                : Color(0xFFFFF2A6), // Amarillo claro en modo claro
+        color: isDarkMode ? Color(0xFF1A1A1A) : Color(0xFFFFF2A6),
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
@@ -126,17 +123,14 @@ class _AddPlantScreenState extends State<AddPlantScreen> {
         },
         style: GoogleFonts.poppins(
           fontSize: 16,
-          color:
-              isDarkMode
-                  ? Color(0xFFFFBF00)
-                  : Colors.black, // Amarillo en modo oscuro
+          color: isDarkMode ? Color(0xFFFFBF00) : Colors.black,
         ),
         decoration: InputDecoration(
           hintText: 'Buscar plantas...',
           hintStyle: GoogleFonts.poppins(
             color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
           ),
-          prefixIcon: Icon(Icons.search, color: Color(0xFF29AB87)), // Verde
+          prefixIcon: Icon(Icons.search, color: Color(0xFF29AB87)),
           suffixIcon:
               _searchQuery.isNotEmpty
                   ? IconButton(
@@ -162,27 +156,18 @@ class _AddPlantScreenState extends State<AddPlantScreen> {
     final isDarkMode = themeProvider.isDarkMode;
 
     return Scaffold(
-      backgroundColor:
-          isDarkMode
-              ? Color(0xFF121212)
-              : Color(0xFFFFF2A6), // Fondo amarillo claro
+      backgroundColor: isDarkMode ? Color(0xFF121212) : Color(0xFFFFF2A6),
       appBar: AppBar(
         title: Text(
           _showConfirmation ? "" : "Selecciona una planta",
           style: GoogleFonts.poppins(
             fontWeight: FontWeight.bold,
-            color:
-                isDarkMode
-                    ? Color(0xFFFFBF00)
-                    : Colors.white, // Amarillo en oscuro, blanco en claro
+            color: isDarkMode ? Color(0xFFFFBF00) : Colors.white,
           ),
         ),
         centerTitle: true,
         elevation: 0,
-        backgroundColor:
-            isDarkMode
-                ? Color(0xFF1A1A1A)
-                : Color(0xFF29AB87), // Verde en claro
+        backgroundColor: isDarkMode ? Color(0xFF1A1A1A) : Color(0xFF29AB87),
         titleTextStyle: GoogleFonts.poppins(
           fontSize: 23,
           fontWeight: FontWeight.bold,
@@ -208,7 +193,7 @@ class _AddPlantScreenState extends State<AddPlantScreen> {
   Widget _buildPlantSelectionScreen(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final isDarkMode = themeProvider.isDarkMode;
-    final primaryColor = Color(0xFF29AB87); // Verde principal
+    final primaryColor = Color(0xFF29AB87);
 
     return Padding(
       padding: const EdgeInsets.all(16.0),
@@ -244,10 +229,7 @@ class _AddPlantScreenState extends State<AddPlantScreen> {
                         Icon(
                           Icons.local_florist,
                           size: 50,
-                          color:
-                              isDarkMode
-                                  ? Color(0xFFFFBF00)
-                                  : primaryColor, // Amarillo en oscuro, verde en claro
+                          color: isDarkMode ? Color(0xFFFFBF00) : primaryColor,
                         ),
                         SizedBox(height: 16),
                         Text(
@@ -266,6 +248,15 @@ class _AddPlantScreenState extends State<AddPlantScreen> {
                     snapshot.data!.snapshot.value as Map<dynamic, dynamic>;
                 final plants = plantsMap.entries.toList();
 
+                // Filtrar según búsqueda
+                final filteredPlants =
+                    _searchQuery.isEmpty
+                        ? plants
+                        : plants.where((plant) {
+                          final plantName = plant.key.toString().toLowerCase();
+                          return plantName.contains(_searchQuery);
+                        }).toList();
+
                 return GridView.builder(
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
@@ -273,9 +264,9 @@ class _AddPlantScreenState extends State<AddPlantScreen> {
                     mainAxisSpacing: 16,
                     childAspectRatio: 0.85,
                   ),
-                  itemCount: plants.length,
+                  itemCount: filteredPlants.length,
                   itemBuilder: (context, index) {
-                    final plant = plants[index];
+                    final plant = filteredPlants[index];
                     final plantName = plant.key;
                     final normalizedName = normalizeName(plantName);
 
@@ -317,7 +308,7 @@ class _AddPlantScreenState extends State<AddPlantScreen> {
                                     color:
                                         isDarkMode
                                             ? Color(0xFFFFBF00)
-                                            : primaryColor, // Amarillo en oscuro, verde en claro
+                                            : primaryColor,
                                   ),
                                   textAlign: TextAlign.center,
                                   maxLines: 2,
@@ -346,11 +337,7 @@ class _AddPlantScreenState extends State<AddPlantScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.check_circle,
-            size: 100,
-            color: Color(0xFF29AB87), // Verde
-          ),
+          Icon(Icons.check_circle, size: 100, color: Color(0xFF29AB87)),
           SizedBox(height: 23),
           Text(
             "Planta $_selectedPlantName agregada con éxito",
@@ -367,7 +354,7 @@ class _AddPlantScreenState extends State<AddPlantScreen> {
             width: 120,
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFF29AB87), // Verde
+                backgroundColor: Color(0xFF29AB87),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
